@@ -7,6 +7,7 @@ import {
 import { usePoints } from "@/hooks/usePoints";
 import { useTasks } from "@/hooks/useTasks";
 import { useUser, type AzoxUser } from "@/hooks/useUser";
+import { useBoxAlert } from "@/hooks/useBoxAlert";
 import type { Rank } from "@/lib/azox-data";
 
 type AzoxState = {
@@ -24,6 +25,9 @@ type AzoxState = {
   claimDaily: () => void;
   globalWins: number;
   referrals: number;
+  isBoxOpen: boolean;
+  boxSecondsRemaining: number;
+  boxAlreadyOpened: boolean;
 };
 
 const AzoxContext = createContext<AzoxState | null>(null);
@@ -42,6 +46,7 @@ export function AzoxProvider({ children }: { children: ReactNode }) {
   } = usePoints();
   const { completedTasks, completeTask, dailyClaimed, claimDaily } =
     useTasks(addPoints);
+  const boxAlert = useBoxAlert();
 
   const value = useMemo<AzoxState>(
     () => ({
@@ -59,6 +64,9 @@ export function AzoxProvider({ children }: { children: ReactNode }) {
       claimDaily,
       globalWins,
       referrals: 0,
+      isBoxOpen: boxAlert.isBoxOpen,
+      boxSecondsRemaining: boxAlert.secondsRemaining,
+      boxAlreadyOpened: boxAlert.alreadyOpened,
     }),
     [
       user,
@@ -74,6 +82,7 @@ export function AzoxProvider({ children }: { children: ReactNode }) {
       dailyClaimed,
       claimDaily,
       globalWins,
+      boxAlert,
     ],
   );
 
