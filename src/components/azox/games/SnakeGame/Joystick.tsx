@@ -59,7 +59,6 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
             onPointerDown={(e) => {
               e.preventDefault();
               changeDirection(dir);
-              onMove(dir);
             }}
             style={{
               gridArea,
@@ -89,4 +88,5 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
     </div>
   );
 }
+
 
