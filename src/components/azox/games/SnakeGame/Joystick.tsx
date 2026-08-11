@@ -23,6 +23,8 @@ const OPPOSITE: Record<Direction, Direction> = {
 };
 
 export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
+  // eslint-disable-next-line no-console
+  console.log("[joystick] component render");
   const [dir, setDir] = useState<Direction>("right");
   const dirRef = useRef<Direction>("right");
   dirRef.current = dir;
