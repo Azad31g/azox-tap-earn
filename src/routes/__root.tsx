@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AzoxProvider } from "../components/azox/app-provider";
 import { TopBar } from "../components/azox/top-bar";
 import { BottomNav } from "../components/azox/bottom-nav";
+import { BoxAlertBanner } from "../components/azox/box-alert-banner";
 
 
 function NotFoundComponent() {
@@ -137,6 +138,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AzoxProvider>
         <div className="min-h-screen bg-background text-foreground">
+          <BoxAlertBanner />
           <TopBar />
           <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
