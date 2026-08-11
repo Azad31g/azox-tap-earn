@@ -191,11 +191,10 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
           next.x < 0 || next.y < 0 || next.x >= GRID || next.y >= GRID;
         const body = prev.slice(0, prev.length - 1);
         const hitSelf = body.some((p) => p.x === next.x && p.y === next.y);
-        let hitRock = false;
-        setRocks((rs) => {
-          hitRock = rs.some((r) => r.pos.x === next.x && r.pos.y === next.y);
-          return rs;
-        });
+        const hitRock = rocksRef.current.some(
+          (r) => r.pos.x === next.x && r.pos.y === next.y,
+        );
+
         const fatal = hitWall || hitSelf || hitRock;
 
         if (fatal) {
