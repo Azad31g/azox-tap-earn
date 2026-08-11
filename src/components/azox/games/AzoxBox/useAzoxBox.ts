@@ -57,7 +57,7 @@ export function getSchedule(dateStr: string): number[] {
 
 export function getCurrentSession(schedule: number[], secondsFromMidnight: number): number | null {
   for (let i = 0; i < schedule.length; i++) {
-    const start = schedule[i];
+    const start = schedule[i]!;
     if (secondsFromMidnight >= start && secondsFromMidnight < start + SESSION_SECONDS) {
       return i;
     }
@@ -132,20 +132,20 @@ export function useAzoxBox() {
   const isActive = sessionIndex !== null && spotsLeft > 0;
 
   const secondsRemaining =
-    sessionIndex === null ? 0 : schedule[sessionIndex] + SESSION_SECONDS - secondsFromMidnight;
+    sessionIndex === null ? 0 : schedule[sessionIndex]! + SESSION_SECONDS - secondsFromMidnight;
 
   const nextIndex = schedule.findIndex((t) => t > secondsFromMidnight);
   const timeUntilNext =
     nextIndex === -1
       ? 24 * 3600 - secondsFromMidnight + (schedule[0] ?? 0)
-      : schedule[nextIndex] - secondsFromMidnight;
+      : schedule[nextIndex]! - secondsFromMidnight;
   const nextBoxNumber = nextIndex === -1 ? 1 : nextIndex + 1;
 
   // Missed: a session already passed since last opened, and none active
   const lastPassed = (() => {
     let idx = -1;
     for (let i = 0; i < schedule.length; i++) {
-      if (schedule[i] + SESSION_SECONDS <= secondsFromMidnight) idx = i;
+      if (schedule[i]! + SESSION_SECONDS <= secondsFromMidnight) idx = i;
     }
     return idx;
   })();
