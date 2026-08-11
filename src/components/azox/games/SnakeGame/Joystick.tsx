@@ -44,8 +44,12 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
   }, [dir, onMove]);
 
   const button = (d: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
+    // eslint-disable-next-line no-console
+    console.log("[joystick] render button", d);
     const ref = useRef<HTMLButtonElement>(null);
     useEffect(() => {
+      // eslint-disable-next-line no-console
+      console.log("[joystick] effect run", d);
       const el = ref.current;
       if (!el) return;
       const onDown = (e: PointerEvent) => {
