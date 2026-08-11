@@ -67,6 +67,20 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
         e.stopPropagation();
         handleDirection(d);
       }}
+      onMouseDown={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // eslint-disable-next-line no-console
+        console.log("[joystick] mousedown", d);
+        handleDirection(d);
+      }}
+      onTouchStart={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // eslint-disable-next-line no-console
+        console.log("[joystick] touchstart", d);
+        handleDirection(d);
+      }}
     >
       {ARROWS[d]}
     </button>
