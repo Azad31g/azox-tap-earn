@@ -33,7 +33,6 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
     });
   }, [onMove]);
 
-
   return (
     <div
       className="flex justify-center py-4"
