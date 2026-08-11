@@ -5,6 +5,8 @@ import {
   resolveGameId,
 } from "@/components/azox/games/game-screen";
 import ShootGame from "@/components/azox/games/ShootGame";
+import SnakeGame from "@/components/azox/games/SnakeGame";
+
 import { useAzox } from "@/components/azox/app-provider";
 
 
