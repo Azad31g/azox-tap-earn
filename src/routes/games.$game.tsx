@@ -5,6 +5,8 @@ import {
   resolveGameId,
 } from "@/components/azox/games/game-screen";
 import ShootGame from "@/components/azox/games/ShootGame";
+import SnakeGame from "@/components/azox/games/SnakeGame";
+
 import { useAzox } from "@/components/azox/app-provider";
 
 
@@ -45,5 +47,9 @@ function GameRoute() {
   if (game === "shoot") {
     return <ShootGame onGameOver={(score) => addPoints(score)} />;
   }
+  if (game === "snake") {
+    return <SnakeGame />;
+  }
+
   return <GameScreen game={game} />;
 }
