@@ -123,7 +123,11 @@ export default function SnakeGame() {
         </GameBoard>
       </div>
 
-        <Joystick onMove={game.setDirection} />
+        <Joystick
+          onMove={(d) => {
+            game.setDirection(d);
+          }}
+        />
       </div>
     </div>
   );
