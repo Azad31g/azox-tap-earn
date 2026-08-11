@@ -8,9 +8,9 @@ import { AzoxFooter } from "@/components/azox/footer";
 import { RANKS, formatPoints, nextRank as getNextRank } from "@/lib/azox-data";
 
 export function ProfilePage() {
-  const { points, rank, completedTasks } = useAzox();
+  const { user, points, rank, completedTasks, referrals } = useAzox();
   const [copied, setCopied] = useState(false);
-  const referral = "https://t.me/AzoxBot?start=azox2026";
+  const referral = user.referralLink;
   const nextRank = getNextRank(points);
 
   const progress = nextRank
@@ -36,7 +36,7 @@ export function ProfilePage() {
     { label: "Total Points", value: formatPoints(points), icon: Coins },
     { label: "Current Rank", value: rank.key, icon: Trophy },
     { label: "Tasks Done", value: String(completedTasks.size), icon: Zap },
-    { label: "Referrals", value: "0", icon: Users },
+    { label: "Referrals", value: String(referrals), icon: Users },
   ];
 
   return (
@@ -45,13 +45,13 @@ export function ProfilePage() {
       <section className="glass glow-purple flex items-center gap-3 rounded-2xl p-4">
         <Avatar className="size-14 border border-accent/40">
           <AvatarFallback className="bg-accent/15 text-lg font-bold text-accent">
-            AZ
+            {user.initials}
           </AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <p className="text-base font-bold">AZOX Player</p>
+          <p className="text-base font-bold">{user.name}</p>
           <p className="text-xs text-muted-foreground">
-            Robinhood Chain · {rank.key}
+            @{user.username} · joined {user.joinedAt}
           </p>
         </div>
         <span

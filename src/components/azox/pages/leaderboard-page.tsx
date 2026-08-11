@@ -1,27 +1,19 @@
 import { useState } from "react";
 import { Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LEADERBOARD, RANKS, formatPoints, type RankKey } from "@/lib/azox-data";
+import { formatPoints, type RankKey } from "@/lib/azox-data";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-const RANK_ORDER: RankKey[] = [
-  "Legendary",
-  "Epic",
-  "Diamond",
-  "Platinum",
-  "Gold",
-  "Silver",
-  "Bronze",
-];
-
-function rankColor(key: RankKey) {
-  return RANKS.find((r) => r.key === key)?.color ?? "#ffffff";
-}
 
 export function LeaderboardPage() {
   const [active, setActive] = useState<RankKey>("Legendary");
-  const users = [...LEADERBOARD[active]].sort((a, b) => b.points - a.points);
-  const activeThreshold = RANKS.find((r) => r.key === active)?.threshold ?? 0;
+  const {
+    order: RANK_ORDER,
+    players: users,
+    thresholdFor,
+    colorFor: rankColor,
+  } = useLeaderboard(active);
+  const activeThreshold = thresholdFor(active);
 
   return (
     <div className="flex flex-col gap-5">
@@ -93,7 +85,7 @@ export function LeaderboardPage() {
           </span>
         </div>
         <ul className="flex flex-col">
-          {users.map((u, i) => (
+          {users.map((u) => (
             <li
               key={u.name}
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-secondary/40"
@@ -101,10 +93,10 @@ export function LeaderboardPage() {
               <span
                 className={cn(
                   "w-5 text-center text-sm font-bold tabular-nums",
-                  i === 0 ? "text-gold" : "text-muted-foreground",
+                  u.position === 1 ? "text-gold" : "text-muted-foreground",
                 )}
               >
-                {i + 1}
+                {u.position}
               </span>
               <Avatar className="size-9">
                 <AvatarFallback className="bg-secondary text-xs font-semibold">

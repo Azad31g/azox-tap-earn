@@ -8,7 +8,7 @@ type Ripple = { id: number; x: number; y: number };
 let counter = 0;
 
 export function ClickButton() {
-  const { addPoints, rank } = useAzox();
+  const { tap, rank } = useAzox();
   const [floats, setFloats] = useState<FloatText[]>([]);
   const [ripples, setRipples] = useState<Ripple[]>([]);
   const [pressed, setPressed] = useState(false);
@@ -19,8 +19,7 @@ export function ClickButton() {
       const rect = btnRef.current?.getBoundingClientRect();
       if (!rect) return;
       const fingers = Math.max(1, touches.length);
-      const gained = fingers * rank.pointsPerFinger;
-      addPoints(gained);
+      const gained = tap(fingers);
 
       const newFloats: FloatText[] = [];
       const newRipples: Ripple[] = [];
@@ -51,7 +50,7 @@ export function ClickButton() {
         setRipples((prev) => prev.filter((r) => !ids.has(r.id)));
       }, 900);
     },
-    [addPoints, rank.pointsPerFinger],
+    [tap, rank.pointsPerFinger],
   );
 
   return (

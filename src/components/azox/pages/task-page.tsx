@@ -26,14 +26,13 @@ const PLATFORM_ICONS: Record<string, typeof Send> = {
 };
 
 function TaskRow({ task }: { task: SocialTask }) {
-  const { completedTasks, completeTask, addPoints } = useAzox();
+  const { completedTasks, completeTask } = useAzox();
   const [opened, setOpened] = useState(false);
   const claimed = completedTasks.has(task.id);
 
   const handleClaim = () => {
     if (claimed || !opened) return;
     completeTask(task.id);
-    addPoints(task.points);
   };
 
   return (
