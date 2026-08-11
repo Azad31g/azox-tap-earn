@@ -4,6 +4,9 @@ import {
   GameScreen,
   resolveGameId,
 } from "@/components/azox/games/game-screen";
+import ShootGame from "@/components/azox/games/ShootGame";
+import { useAzox } from "@/components/azox/app-provider";
+
 
 export const Route = createFileRoute("/games/$game")({
   loader: ({ params }) => {
