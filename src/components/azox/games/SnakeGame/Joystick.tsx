@@ -23,8 +23,6 @@ const GRID_POSITIONS: { dir: Direction; gridArea: string }[] = [
 ];
 
 export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
-  // eslint-disable-next-line no-console
-  console.log("[joystick] render");
   const [dir, setDir] = useState<Direction>("right");
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -36,22 +34,16 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log("[joystick] effect onMove", dir);
     onMove(dir);
   }, [dir, onMove]);
 
   useEffect(() => {
     const grid = gridRef.current;
-    // eslint-disable-next-line no-console
-    console.log("[joystick] effect attach grid", grid);
     if (!grid) return;
 
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as HTMLElement;
       const next = target.getAttribute("data-dir") as Direction | null;
-      // eslint-disable-next-line no-console
-      console.log("[joystick] pointerdown target", target.tagName, target.getAttribute("data-dir"));
       if (!next) return;
       e.preventDefault();
       e.stopPropagation();
