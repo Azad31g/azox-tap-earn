@@ -8,8 +8,8 @@ import {
   type TakBomState,
 } from "./types";
 
-const MAX_OBJECTS = 18;
-const SPAWN_MS = 800;
+const MAX_OBJECTS = 35;
+const SPAWN_MS = 400;
 
 let idSeq = 1;
 
@@ -97,18 +97,21 @@ export function useTakBomLogic(onGameOver?: (score: number) => void) {
         const now = Date.now();
         const bombDue = now - lastBombRef.current > rand(15000, 20000);
         if (bombDue) lastBombRef.current = now;
-        const fast = Math.max(1.4, 4 - tier * 0.5);
-        return [
-          ...prev,
-          {
-            id: idSeq++,
-            kind: bombDue ? "bomb" : "star",
-            x: rand(10, 90),
-            duration: rand(Math.max(1.2, fast - 1.4), fast),
-            size: Math.round(rand(34, 62)),
-            spawnedAt: now,
-          },
-        ];
+        const maxFall = Math.max(4.5, 7 - tier * 0.5);
+        const make = (kind: "star" | "bomb"): FallingObj => ({
+          id: idSeq++,
+          kind,
+          x: rand(5, 95),
+          duration: rand(4, maxFall),
+          size: Math.round(rand(34, 62)),
+          spawnedAt: now,
+        });
+        const next = [...prev, make(bombDue ? "bomb" : "star")];
+        // sometimes spawn a second object for higher density
+        if (Math.random() < 0.5 && next.length < MAX_OBJECTS) {
+          next.push(make("star"));
+        }
+        return next;
       });
     }, SPAWN_MS);
     return () => window.clearInterval(t);

@@ -16,7 +16,7 @@ export function GameGrid() {
             transform: "rotateX(70deg)",
             transformOrigin: "50% 0%",
             backgroundImage:
-              "linear-gradient(to right, rgba(34,197,94,0.3) 1px, transparent 1px), linear-gradient(to bottom, rgba(34,197,94,0.3) 1px, transparent 1px)",
+              "linear-gradient(to right, #0A3A0A 1px, transparent 1px), linear-gradient(to bottom, #0A3A0A 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
@@ -32,7 +32,7 @@ export function GameGrid() {
             transform: "rotateX(-70deg)",
             transformOrigin: "50% 100%",
             backgroundImage:
-              "linear-gradient(to right, rgba(34,197,94,0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(34,197,94,0.25) 1px, transparent 1px)",
+              "linear-gradient(to right, #0A3A0A 1px, transparent 1px), linear-gradient(to bottom, #0A3A0A 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
@@ -48,7 +48,7 @@ export function GameGrid() {
             transform: "rotateY(70deg)",
             transformOrigin: "100% 50%",
             backgroundImage:
-              "linear-gradient(to right, rgba(34,197,94,0.22) 1px, transparent 1px), linear-gradient(to bottom, rgba(34,197,94,0.22) 1px, transparent 1px)",
+              "linear-gradient(to right, #0A3A0A 1px, transparent 1px), linear-gradient(to bottom, #0A3A0A 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
@@ -63,7 +63,7 @@ export function GameGrid() {
             transform: "rotateY(-70deg)",
             transformOrigin: "0% 50%",
             backgroundImage:
-              "linear-gradient(to right, rgba(34,197,94,0.22) 1px, transparent 1px), linear-gradient(to bottom, rgba(34,197,94,0.22) 1px, transparent 1px)",
+              "linear-gradient(to right, #0A3A0A 1px, transparent 1px), linear-gradient(to bottom, #0A3A0A 1px, transparent 1px)",
             backgroundSize: "40px 40px",
           }}
         />
