@@ -47,5 +47,9 @@ function GameRoute() {
   if (game === "shoot") {
     return <ShootGame onGameOver={(score) => addPoints(score)} />;
   }
+  if (game === "snake") {
+    return <SnakeGame />;
+  }
+
   return <GameScreen game={game} />;
 }
