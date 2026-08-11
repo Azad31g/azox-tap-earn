@@ -7,8 +7,6 @@ export const SESSION_SECONDS = 70;
 export const MAX_WINNERS = 65000;
 export const BOX_REWARD = 1600;
 
-const SLOT_SECONDS = Math.floor((24 * 3600) / BOXES_PER_DAY); // 4320s = 72 min
-
 export function dateKey(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -16,33 +14,48 @@ export function dateKey(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Deterministic 20-times-per-day schedule (seconds from midnight). */
+/** Completely random (but date-seeded) schedule: up to 20 boxes, wildly varying gaps. */
 export function generateDailySchedule(dateStr: string): number[] {
-  const seed = dateStr.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-  let rng = seed;
-  const random = () => {
-    rng = (rng * 1664525 + 1013904223) & 0xffffffff;
-    return Math.abs(rng) / 0xffffffff;
+  const dateSeed = dateStr
+    .split("")
+    .reduce((a, c, i) => a + c.charCodeAt(0) * (i + 7) * 31, 0);
+
+  let rng = dateSeed ^ 0xdeadbeef;
+  const seededRandom = () => {
+    rng ^= rng << 13;
+    rng ^= rng >> 17;
+    rng ^= rng << 5;
+    return Math.abs(rng % 1000) / 1000;
   };
+
+  const totalSeconds = 24 * 60 * 60;
   const times: number[] = [];
+
+  let lastTime = Math.floor(seededRandom() * 3600);
+
   for (let i = 0; i < BOXES_PER_DAY; i++) {
-    const slotStart = i * SLOT_SECONDS;
-    const span = SLOT_SECONDS - SESSION_SECONDS;
-    times.push(slotStart + Math.floor(random() * span));
+    times.push(lastTime);
+
+    const minGap = 900;
+    const maxGap = 5400;
+    const gap = minGap + Math.floor(seededRandom() * (maxGap - minGap));
+
+    lastTime += gap + SESSION_SECONDS;
+
+    if (lastTime >= totalSeconds - SESSION_SECONDS) break;
   }
-  return times.sort((a, b) => a - b);
+
+  return times;
 }
 
 export function getSchedule(dateStr: string): number[] {
-  const key = `azoxBox_schedule_${dateStr}`;
+  const key = `azoxBox_schedule_v2_${dateStr}`;
   if (typeof window !== "undefined") {
     try {
       const raw = window.localStorage.getItem(key);
       if (raw) {
         const parsed = JSON.parse(raw) as unknown;
-        if (Array.isArray(parsed) && parsed.length === BOXES_PER_DAY) {
-          return parsed as number[];
-        }
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed as number[];
       }
     } catch {
       /* ignore corrupt entries */
@@ -65,12 +78,9 @@ export function getCurrentSession(schedule: number[], secondsFromMidnight: numbe
   return null;
 }
 
-export function formatCountdown(secondsLeft: number): string {
-  const total = Math.max(0, Math.floor(secondsLeft));
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = total % 60;
-  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+/** How many boxes have already appeared (started) today. */
+export function countAppeared(schedule: number[], secondsFromMidnight: number): number {
+  return schedule.filter((t) => t <= secondsFromMidnight).length;
 }
 
 function readOpened(dateStr: string): number[] {
@@ -88,6 +98,10 @@ function readNumber(key: string): number {
   if (typeof window === "undefined") return 0;
   const n = Number(window.localStorage.getItem(key));
   return Number.isFinite(n) ? n : 0;
+}
+
+export function secondsFromMidnight(d: Date): number {
+  return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
 }
 
 export function useAzoxBox() {
@@ -119,39 +133,30 @@ export function useAzoxBox() {
     setWinners(readNumber("azoxBox_winners"));
     setPointsToday(readNumber(`azoxBox_lastPoints_${today}`));
     setHydrated(true);
-    // pre-generate tomorrow's schedule
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     getSchedule(dateKey(tomorrow));
   }, [today]);
 
-  const secondsFromMidnight = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-  const sessionIndex = schedule.length ? getCurrentSession(schedule, secondsFromMidnight) : null;
+  const secs = secondsFromMidnight(now);
+  const sessionIndex = schedule.length ? getCurrentSession(schedule, secs) : null;
   const hasOpened = sessionIndex !== null && opened.includes(sessionIndex);
   const spotsLeft = Math.max(0, MAX_WINNERS - winners);
   const isActive = sessionIndex !== null && spotsLeft > 0;
 
   const secondsRemaining =
-    sessionIndex === null ? 0 : schedule[sessionIndex]! + SESSION_SECONDS - secondsFromMidnight;
+    sessionIndex === null ? 0 : schedule[sessionIndex]! + SESSION_SECONDS - secs;
 
-  const nextIndex = schedule.findIndex((t) => t > secondsFromMidnight);
-  const timeUntilNext =
-    nextIndex === -1
-      ? 24 * 3600 - secondsFromMidnight + (schedule[0] ?? 0)
-      : schedule[nextIndex]! - secondsFromMidnight;
-  const nextBoxNumber = nextIndex === -1 ? 1 : nextIndex + 1;
-
-  // Missed: a session already passed since last opened, and none active
+  // Missed: a session closed within the last 5 minutes and wasn't opened
   const lastPassed = (() => {
     let idx = -1;
     for (let i = 0; i < schedule.length; i++) {
-      if (schedule[i]! + SESSION_SECONDS <= secondsFromMidnight) idx = i;
+      if (schedule[i]! + SESSION_SECONDS <= secs) idx = i;
     }
     return idx;
   })();
   const missedRecently =
-    lastPassed >= 0 &&
-    secondsFromMidnight - (schedule[lastPassed]! + SESSION_SECONDS) < 300;
+    lastPassed >= 0 && secs - (schedule[lastPassed]! + SESSION_SECONDS) < 300;
   const missed = !isActive && missedRecently && !opened.includes(lastPassed);
 
   useEffect(() => {
@@ -161,10 +166,10 @@ export function useAzoxBox() {
   const openBox = useCallback(() => {
     if (busy.current) return;
     const d = new Date();
-    const secs = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
+    const s = secondsFromMidnight(d);
     const key = dateKey(d);
     const sched = getSchedule(key);
-    const idx = getCurrentSession(sched, secs);
+    const idx = getCurrentSession(sched, s);
     if (idx === null) return;
     const already = readOpened(key);
     if (already.includes(idx)) return;
@@ -198,11 +203,9 @@ export function useAzoxBox() {
     justOpened,
     missed,
     sessionIndex,
-    boxNumberToday: sessionIndex === null ? nextBoxNumber : sessionIndex + 1,
-    nextBoxNumber,
     secondsRemaining: Math.max(0, secondsRemaining),
-    timeUntilNext: Math.max(0, timeUntilNext),
     spotsLeft,
+    appearedToday: schedule.length ? countAppeared(schedule, secs) : 0,
     openedCount: opened.length,
     pointsToday,
     openBox,
