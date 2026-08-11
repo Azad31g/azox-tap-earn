@@ -28,13 +28,11 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
   const changeDirection = useCallback((next: Direction) => {
     setDir((prev) => {
       if (OPPOSITE[prev] === next) return prev;
+      onMove(next);
       return next;
     });
-  }, []);
+  }, [onMove]);
 
-  useEffect(() => {
-    onMove(dir);
-  }, [dir, onMove]);
 
   return (
     <div
