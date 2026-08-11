@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Direction } from "./types";
 
 const ARROWS: Record<Direction, string> = {
@@ -31,6 +31,10 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
       return next;
     });
   }, []);
+
+  useEffect(() => {
+    onMove(dir);
+  }, [dir, onMove]);
 
   return (
     <div
@@ -88,5 +92,6 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
     </div>
   );
 }
+
 
 
