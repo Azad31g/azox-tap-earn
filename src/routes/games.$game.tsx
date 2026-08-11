@@ -41,5 +41,9 @@ export const Route = createFileRoute("/games/$game")({
 
 function GameRoute() {
   const { game } = Route.useLoaderData();
+  const { addPoints } = useAzox();
+  if (game === "shoot") {
+    return <ShootGame onGameOver={(score) => addPoints(score)} />;
+  }
   return <GameScreen game={game} />;
 }
