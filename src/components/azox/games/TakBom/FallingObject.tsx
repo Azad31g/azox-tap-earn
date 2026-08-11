@@ -3,9 +3,11 @@ import type { FallingObj } from "./types";
 export function FallingObject({
   obj,
   onTap,
+  onDone,
 }: {
   obj: FallingObj;
   onTap: (obj: FallingObj) => void;
+  onDone: (id: number) => void;
 }) {
   const handle = (e: React.PointerEvent) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ export function FallingObject({
     <button
       type="button"
       onPointerDown={handle}
+      onAnimationEnd={() => onDone(obj.id)}
       aria-label={obj.kind === "bomb" ? "Bomb" : "Star"}
       className="absolute grid place-items-center"
       style={{

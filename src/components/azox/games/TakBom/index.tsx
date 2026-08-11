@@ -39,11 +39,12 @@ export default function TakBomGame() {
               key={obj.id}
               obj={obj}
               onTap={game.tapObject}
+              onDone={game.removeObject}
             />
           ))}
 
           {flash ? (
-            <div className="pointer-events-none absolute inset-0 z-30 bg-yellow-400/30 animate-[fade-out_0.5s_ease-out_forwards]" />
+            <div className="pointer-events-none absolute inset-0 z-30 bg-yellow-400/30" />
           ) : null}
 
           {game.state === "start" ? (
