@@ -67,6 +67,8 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
       onPointerDown={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        // eslint-disable-next-line no-console
+        console.log("[joystick] pointerdown", d);
         handleDirection(d);
       }}
     >
