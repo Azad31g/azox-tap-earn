@@ -49,4 +49,12 @@ public/azox/                  ← game logos copied from the repo
 
 ## Not in this pass
 
-Playable games and `/games/$game` routes, chess / Dama / XO cards (no assets or data in the repo), Telegram WebApp SDK, real leaderboard data. Each is a clean follow-up once the shell matches.
+Playable games and `/games/$game` routes, chess / Dama / XO cards (no assets or data in the repo), Telegram WebApp SDK, real leaderboard data. Each is a clean follow-up once the shell matches.  
+  
+Also copy these game logo images from public/azox/ 
+
+into the project: token.png, video-ads.png, 
+
+global-button.png, question-day.png, box.png, 
+
+clicker-frenzy.png, snake.png, shoot.png, tak-bom.png
