@@ -10,8 +10,8 @@ import {
   type Position,
 } from "./types";
 
-const START_SPEED = 150;
-const MIN_SPEED = 80;
+const START_SPEED = 200;
+const MIN_SPEED = 100;
 
 const OPPOSITE: Record<Direction, Direction> = {
   up: "down",
@@ -148,8 +148,9 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
 
   const speed = Math.max(
     MIN_SPEED,
-    START_SPEED - Math.floor(eaten / 5) * 5,
-  ) * (Date.now() < boostUntil ? 0.6 : 1);
+    (START_SPEED - Math.floor(eaten / 5) * 10) *
+      (Date.now() < boostUntil ? 0.75 : 1),
+  );
 
   // periodic new rocks
   useEffect(() => {

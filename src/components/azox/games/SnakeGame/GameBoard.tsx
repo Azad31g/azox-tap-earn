@@ -1,12 +1,33 @@
 import { useRef } from "react";
 import { GRID, type Direction, type Item, type Position } from "./types";
 
-const ITEM_GLYPH: Record<Item["kind"], string> = {
-  coin: "🪙",
-  diamond: "💎",
-  heart: "❤️",
-  lightning: "⚡",
-  rock: "🪨",
+const ITEM_STYLE: Record<Item["kind"], React.CSSProperties> = {
+  coin: {
+    background: "radial-gradient(circle at 35% 30%, #fde68a, #fbbf24 70%)",
+    borderRadius: "9999px",
+    boxShadow: "0 0 8px rgba(251,191,36,0.6)",
+  },
+  diamond: {
+    background: "linear-gradient(135deg, #93c5fd, #60a5fa)",
+    borderRadius: "4px",
+    transform: "rotate(45deg)",
+    boxShadow: "0 0 8px rgba(96,165,250,0.6)",
+  },
+  heart: {
+    background: "radial-gradient(circle at 35% 30%, #fda4af, #f43f5e 70%)",
+    borderRadius: "9999px",
+    boxShadow: "0 0 8px rgba(244,63,94,0.55)",
+  },
+  lightning: {
+    background: "linear-gradient(135deg, #d9f99d, #a3e635)",
+    borderRadius: "3px",
+    transform: "rotate(20deg)",
+    boxShadow: "0 0 8px rgba(163,230,53,0.6)",
+  },
+  rock: {
+    background: "linear-gradient(150deg, #6b7280, #374151)",
+    borderRadius: "5px",
+  },
 };
 
 export function GameBoard({
@@ -25,35 +46,47 @@ export function GameBoard({
   const startRef = useRef<{ x: number; y: number } | null>(null);
   const cell = 100 / GRID;
 
-  const handleStart = (e: React.PointerEvent) => {
-    e.preventDefault();
-    startRef.current = { x: e.clientX, y: e.clientY };
+  const handleStart = (x: number, y: number) => {
+    startRef.current = { x, y };
   };
-  const handleEnd = (e: React.PointerEvent) => {
-    e.preventDefault();
+  const handleEnd = (x: number, y: number) => {
     const s = startRef.current;
     startRef.current = null;
     if (!s) return;
-    const dx = e.clientX - s.x;
-    const dy = e.clientY - s.y;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
-    if (Math.abs(dx) > Math.abs(dy)) onSwipe(dx > 0 ? "right" : "left");
-    else onSwipe(dy > 0 ? "down" : "up");
+    const dx = x - s.x;
+    const dy = y - s.y;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 30) onSwipe("right");
+      else if (dx < -30) onSwipe("left");
+    } else {
+      if (dy > 30) onSwipe("down");
+      else if (dy < -30) onSwipe("up");
+    }
   };
 
   return (
-    <div className="flex justify-center px-4">
+    <div className="flex w-full justify-center px-4">
       <div
-        onPointerDown={handleStart}
-        onPointerUp={handleEnd}
+        onPointerDown={(e) => handleStart(e.clientX, e.clientY)}
+        onPointerUp={(e) => handleEnd(e.clientX, e.clientY)}
         onPointerCancel={() => (startRef.current = null)}
-        className="relative aspect-square w-full max-w-[85vw] overflow-hidden rounded-2xl border-2 border-primary bg-[#0a0a0a]"
+        onTouchStart={(e) => {
+          e.preventDefault();
+          const t = e.touches[0];
+          if (t) handleStart(t.clientX, t.clientY);
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          const t = e.changedTouches[0];
+          if (t) handleEnd(t.clientX, t.clientY);
+        }}
+        className="relative aspect-square w-[min(85vw,480px)] overflow-hidden rounded-2xl border-2 border-primary bg-[#0d0d0d] md:w-[min(60vw,500px)] lg:w-[480px]"
         style={{
           touchAction: "none",
           boxShadow:
-            "0 0 24px rgba(163,230,53,0.45), inset 0 0 40px rgba(0,0,0,0.9)",
+            "0 0 24px rgba(34,197,94,0.45), inset 0 0 40px rgba(0,0,0,0.9)",
           backgroundImage:
-            "linear-gradient(rgba(163,230,53,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(163,230,53,0.07) 1px, transparent 1px)",
+            "linear-gradient(#1a1a1a 1px, transparent 1px), linear-gradient(90deg, #1a1a1a 1px, transparent 1px)",
           backgroundSize: `${cell}% ${cell}%`,
         }}
       >
@@ -66,56 +99,58 @@ export function GameBoard({
               top: `${it.pos.y * cell}%`,
               width: `${cell}%`,
               height: `${cell}%`,
-              fontSize: "min(4.2vw, 22px)",
-              filter:
-                it.kind === "rock"
-                  ? "grayscale(1) brightness(0.9)"
-                  : "drop-shadow(0 0 6px rgba(255,255,255,0.25))",
             }}
           >
-            <span aria-hidden="true">{ITEM_GLYPH[it.kind]}</span>
+            <span
+              aria-hidden="true"
+              className="block size-[70%]"
+              style={ITEM_STYLE[it.kind]}
+            />
           </div>
         ))}
 
-        {snake.map((seg, i) => (
-          <div
-            key={`${seg.x}-${seg.y}-${i}`}
-            className="absolute grid place-items-center transition-all duration-100"
-            style={{
-              left: `${seg.x * cell}%`,
-              top: `${seg.y * cell}%`,
-              width: `${cell}%`,
-              height: `${cell}%`,
-              zIndex: snake.length - i,
-            }}
-          >
-            {i === 0 ? (
+        {snake.map((seg, i) => {
+          const isHead = i === 0;
+          const isTail = i === snake.length - 1 && snake.length > 1;
+          return (
+            <div
+              key={`${seg.x}-${seg.y}-${i}`}
+              className="absolute grid place-items-center"
+              style={{
+                left: `${seg.x * cell}%`,
+                top: `${seg.y * cell}%`,
+                width: `${cell}%`,
+                height: `${cell}%`,
+                zIndex: snake.length - i,
+              }}
+            >
               <span
                 aria-hidden="true"
-                className="grid size-[92%] place-items-center rounded-full"
+                className="relative block"
                 style={{
-                  background:
-                    "radial-gradient(circle at 32% 28%, #d9ff7a, #7bc32a 60%, #3f6b12)",
-                  boxShadow:
-                    "0 0 10px rgba(163,230,53,0.8), inset 0 -2px 4px rgba(0,0,0,0.4)",
-                  fontSize: "min(3vw, 14px)",
+                  width: isHead ? "100%" : isTail ? "70%" : "84%",
+                  height: isHead ? "100%" : isTail ? "70%" : "84%",
+                  borderRadius: isHead ? 6 : 4,
+                  background: isHead
+                    ? "#22c55e"
+                    : isTail
+                      ? "#15803d"
+                      : "#16a34a",
+                  boxShadow: isHead
+                    ? "0 0 10px rgba(34,197,94,0.7)"
+                    : undefined,
                 }}
               >
-                🐍
+                {isHead ? (
+                  <>
+                    <span className="absolute left-[22%] top-[26%] block size-[16%] rounded-full bg-white" />
+                    <span className="absolute right-[22%] top-[26%] block size-[16%] rounded-full bg-white" />
+                  </>
+                ) : null}
               </span>
-            ) : (
-              <span
-                aria-hidden="true"
-                className="block size-[86%] rounded-full"
-                style={{
-                  background:
-                    "radial-gradient(circle at 32% 28%, #cbfa6a, #6fb327 62%, #34590f)",
-                  boxShadow: "inset 0 -2px 4px rgba(0,0,0,0.45)",
-                }}
-              />
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
 
         {children}
       </div>
