@@ -11,6 +11,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AzoxProvider } from "../components/azox/app-provider";
+import { TopBar } from "../components/azox/top-bar";
+import { BottomNav } from "../components/azox/bottom-nav";
+
 
 function NotFoundComponent() {
   return (
