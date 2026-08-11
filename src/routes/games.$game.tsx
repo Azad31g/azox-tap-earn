@@ -6,6 +6,7 @@ import {
 } from "@/components/azox/games/game-screen";
 import ShootGame from "@/components/azox/games/ShootGame";
 import SnakeGame from "@/components/azox/games/SnakeGame";
+import TakBomGame from "@/components/azox/games/TakBom";
 
 import { useAzox } from "@/components/azox/app-provider";
 
@@ -49,6 +50,9 @@ function GameRoute() {
   }
   if (game === "snake") {
     return <SnakeGame />;
+  }
+  if (game === "tak-bom") {
+    return <TakBomGame />;
   }
 
   return <GameScreen game={game} />;

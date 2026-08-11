@@ -200,3 +200,26 @@
 .animate-azox-pulse-ring {
   animation: azox-pulse-ring 2s ease-out infinite;
 }
+
+@keyframes takbom-fall {
+  0% {
+    transform: translateY(-60px) scale(0.3);
+    opacity: 0.5;
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(100dvh)) scale(1.5);
+    opacity: 1;
+  }
+}
+
+@keyframes takbom-grid {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 40px;
+  }
+}
