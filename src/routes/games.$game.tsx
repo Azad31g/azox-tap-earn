@@ -4,6 +4,7 @@ import {
   GameScreen,
   resolveGameId,
 } from "@/components/azox/games/game-screen";
+import GlobalButton from "@/components/azox/games/GlobalButton";
 import ShootGame from "@/components/azox/games/ShootGame";
 import SnakeGame from "@/components/azox/games/SnakeGame";
 import TakBomGame from "@/components/azox/games/TakBom";
@@ -53,6 +54,9 @@ function GameRoute() {
   }
   if (game === "tak-bom") {
     return <TakBomGame />;
+  }
+  if (game === "global-button") {
+    return <GlobalButton />;
   }
 
   return <GameScreen game={game} />;
