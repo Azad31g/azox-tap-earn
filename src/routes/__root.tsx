@@ -131,8 +131,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AzoxProvider>
+        <div className="min-h-screen bg-background text-foreground">
+          <TopBar />
+          <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </main>
+          <BottomNav />
+        </div>
+      </AzoxProvider>
     </QueryClientProvider>
   );
 }
+
