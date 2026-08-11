@@ -5,12 +5,13 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { useAzox } from "@/components/azox/app-provider";
 import { AzoxFooter } from "@/components/azox/footer";
-import { RANKS, formatPoints } from "@/lib/azox-data";
+import { RANKS, formatPoints, nextRank as getNextRank } from "@/lib/azox-data";
 
 export function ProfilePage() {
-  const { points, rank, nextRank, completedTasks } = useAzox();
+  const { points, rank, completedTasks } = useAzox();
   const [copied, setCopied] = useState(false);
   const referral = "https://t.me/AzoxBot?start=azox2026";
+  const nextRank = getNextRank(points);
 
   const progress = nextRank
     ? Math.min(
@@ -19,6 +20,7 @@ export function ProfilePage() {
           100,
       )
     : 100;
+
 
   const copy = async () => {
     try {
