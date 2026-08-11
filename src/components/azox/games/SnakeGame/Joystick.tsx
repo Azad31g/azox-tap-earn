@@ -38,6 +38,8 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
       didInit.current = true;
       return;
     }
+    // eslint-disable-next-line no-console
+    console.log("[joystick] onMove", dir);
     onMove(dir);
   }, [dir, onMove]);
 
