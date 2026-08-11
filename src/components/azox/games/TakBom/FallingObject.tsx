@@ -38,14 +38,14 @@ export function FallingObject({
           style={{
             width: "100%",
             height: "100%",
-            color: "#22c55e",
-            filter: "drop-shadow(0 0 10px #22c55e) drop-shadow(0 0 20px #16a34a)",
+            filter:
+              "drop-shadow(0 0 6px #39FF14) drop-shadow(0 0 12px #61D120)",
           }}
         >
           <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
             <g
-              stroke="currentColor"
-              strokeWidth="9"
+              stroke="#2E8B10"
+              strokeWidth="12"
               strokeLinecap="round"
               shapeRendering="crispEdges"
             >
@@ -54,7 +54,17 @@ export function FallingObject({
               <line x1="20" y1="20" x2="80" y2="80" />
               <line x1="80" y1="20" x2="20" y2="80" />
             </g>
-            <circle cx="50" cy="50" r="10" fill="#dcfce7" />
+            <g stroke="#61D120" strokeWidth="8" strokeLinecap="round">
+              <line x1="50" y1="8" x2="50" y2="92" />
+              <line x1="8" y1="50" x2="92" y2="50" />
+              <line x1="20" y1="20" x2="80" y2="80" />
+              <line x1="80" y1="20" x2="20" y2="80" />
+            </g>
+            <g stroke="#8AFF32" strokeWidth="4" strokeLinecap="round">
+              <line x1="50" y1="24" x2="50" y2="76" />
+              <line x1="24" y1="50" x2="76" y2="50" />
+            </g>
+            <circle cx="50" cy="50" r="10" fill="#8AFF32" />
           </svg>
         </span>
       ) : (
