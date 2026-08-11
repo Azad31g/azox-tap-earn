@@ -196,7 +196,10 @@ export class Game {
   }
 
   private acquire<T extends { active: boolean }>(pool: T[], factory: () => T): T {
-    for (let i = 0; i < pool.length; i++) if (!pool[i].active) return pool[i];
+    for (let i = 0; i < pool.length; i++) {
+      const item = pool[i];
+      if (item && !item.active) return item;
+    }
     const n = factory();
     pool.push(n);
     return n;
