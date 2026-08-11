@@ -11,6 +11,10 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { AzoxProvider } from "../components/azox/app-provider";
+import { TopBar } from "../components/azox/top-bar";
+import { BottomNav } from "../components/azox/bottom-nav";
+
 
 function NotFoundComponent() {
   return (
@@ -76,15 +80,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+      },
+      { title: "AZOX — Tap to Earn Mini App" },
+      {
+        name: "description",
+        content:
+          "AZOX gaming mini app: tap to earn points, play mini games and climb 7 global ranks.",
+      },
+      { name: "author", content: "Guardex Quant LABs" },
+      { name: "theme-color", content: "#000000" },
+      { property: "og:title", content: "AZOX — Tap to Earn Mini App" },
+      {
+        property: "og:description",
+        content: "Tap to earn AZOX points and climb 7 global ranks.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -94,6 +109,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -119,8 +135,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AzoxProvider>
+        <div className="min-h-screen bg-background text-foreground">
+          <TopBar />
+          <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </main>
+          <BottomNav />
+        </div>
+      </AzoxProvider>
     </QueryClientProvider>
   );
 }
+
