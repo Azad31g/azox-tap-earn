@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { Direction } from "./types";
 
 const ARROWS: Record<Direction, string> = {
