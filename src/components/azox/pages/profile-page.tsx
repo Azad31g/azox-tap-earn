@@ -1,0 +1,142 @@
+import { useState } from "react";
+import { Copy, Check, Users, Coins, Zap, Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { useAzox } from "@/components/azox/app-provider";
+import { AzoxFooter } from "@/components/azox/footer";
+import { RANKS, formatPoints } from "@/lib/azox-data";
+
+export function ProfilePage() {
+  const { points, rank, nextRank, completedTasks } = useAzox();
+  const [copied, setCopied] = useState(false);
+  const referral = "https://t.me/AzoxBot?start=azox2026";
+
+  const progress = nextRank
+    ? Math.min(
+        100,
+        ((points - rank.threshold) / (nextRank.threshold - rank.threshold)) *
+          100,
+      )
+    : 100;
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(referral);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  const stats = [
+    { label: "Total Points", value: formatPoints(points), icon: Coins },
+    { label: "Current Rank", value: rank.key, icon: Trophy },
+    { label: "Tasks Done", value: String(completedTasks.size), icon: Zap },
+    { label: "Referrals", value: "0", icon: Users },
+  ];
+
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Identity */}
+      <section className="glass glow-purple flex items-center gap-3 rounded-2xl p-4">
+        <Avatar className="size-14 border border-accent/40">
+          <AvatarFallback className="bg-accent/15 text-lg font-bold text-accent">
+            AZ
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <p className="text-base font-bold">AZOX Player</p>
+          <p className="text-xs text-muted-foreground">
+            Robinhood Chain · {rank.key}
+          </p>
+        </div>
+        <span
+          className="rounded-full border px-2.5 py-1 text-[11px] font-semibold"
+          style={{ color: rank.color, borderColor: rank.color }}
+        >
+          {rank.key}
+        </span>
+      </section>
+
+      {/* Stats grid */}
+      <section className="grid grid-cols-2 gap-3">
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <div key={s.label} className="glass rounded-2xl p-4">
+              <Icon className="size-4 text-accent" aria-hidden="true" />
+              <p className="mt-2 text-lg font-bold tabular-nums">{s.value}</p>
+              <p className="text-[11px] text-muted-foreground">{s.label}</p>
+            </div>
+          );
+        })}
+      </section>
+
+      {/* Rank progress */}
+      <section className="glass rounded-2xl p-4">
+        <div className="mb-2 flex items-center justify-between text-xs">
+          <span className="font-semibold" style={{ color: rank.color }}>
+            {rank.key}
+          </span>
+          {nextRank ? (
+            <span className="text-muted-foreground">
+              {formatPoints(nextRank.threshold - points)} to{" "}
+              <span style={{ color: nextRank.color }}>{nextRank.key}</span>
+            </span>
+          ) : (
+            <span className="text-gold">Max rank reached</span>
+          )}
+        </div>
+        <Progress value={progress} className="h-2 bg-secondary" />
+      </section>
+
+      {/* Referral */}
+      <section className="glass rounded-2xl p-4">
+        <p className="text-sm font-bold">Your referral link</p>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Invite friends and earn bonus points together.
+        </p>
+        <div className="flex items-center gap-2">
+          <code className="min-w-0 flex-1 truncate rounded-xl border border-border bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
+            {referral}
+          </code>
+          <Button
+            onClick={copy}
+            className="rounded-xl bg-accent font-semibold text-accent-foreground hover:bg-accent/90"
+          >
+            {copied ? (
+              <Check className="size-4" aria-hidden="true" />
+            ) : (
+              <Copy className="size-4" aria-hidden="true" />
+            )}
+            {copied ? "Copied" : "Copy"}
+          </Button>
+        </div>
+      </section>
+
+      {/* All ranks */}
+      <section className="glass rounded-2xl p-4">
+        <h2 className="mb-3 text-sm font-bold">Rank ladder</h2>
+        <ul className="flex flex-col gap-2">
+          {RANKS.map((r) => (
+            <li
+              key={r.key}
+              className="flex items-center justify-between rounded-xl border border-border bg-secondary/40 px-3 py-2 text-xs"
+            >
+              <span className="font-semibold" style={{ color: r.color }}>
+                {r.key}
+              </span>
+              <span className="text-muted-foreground">
+                {formatPoints(r.threshold)}+ · {r.pointsPerFinger}/finger
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <AzoxFooter variant="profile" />
+    </div>
+  );
+}
