@@ -15,80 +15,62 @@ const LOWER: Record<"UP" | "DOWN" | "LEFT" | "RIGHT", Direction> = {
   RIGHT: "right",
 };
 
+const OPPOSITE: Record<Direction, Direction> = {
+  up: "down",
+  down: "up",
+  left: "right",
+  right: "left",
+};
+
 export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
   const [dir, setDir] = useState<Direction>("right");
-  const didInit = useRef(false);
+  const dirRef = useRef<Direction>("right");
+  dirRef.current = dir;
 
-  const handleDirection = useCallback((d: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
-    const opposites = {
-      UP: "DOWN",
-      DOWN: "UP",
-      LEFT: "RIGHT",
-      RIGHT: "LEFT",
-    } as const;
-    setDir((prev) => {
-      const prevUpper = prev.toUpperCase() as keyof typeof opposites;
-      if (opposites[d] === prevUpper) return prev;
-      return LOWER[d];
-    });
-  }, []);
+  const handleDirection = useCallback(
+    (next: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
+      setDir((prev) => {
+        if (OPPOSITE[prev] === LOWER[next]) return prev;
+        return LOWER[next];
+      });
+    },
+    [],
+  );
 
   useEffect(() => {
-    if (!didInit.current) {
-      didInit.current = true;
-      return;
-    }
-    // eslint-disable-next-line no-console
-    console.log("[joystick] onMove", dir);
     onMove(dir);
   }, [dir, onMove]);
 
-  const button = (d: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
-    // eslint-disable-next-line no-console
-    console.log("[joystick] render button", d);
-    const ref = useRef<HTMLButtonElement>(null);
-    useEffect(() => {
-      // eslint-disable-next-line no-console
-      console.log("[joystick] effect run", d);
-      const el = ref.current;
-      if (!el) return;
-      const onDown = (e: PointerEvent) => {
+  const button = (d: "UP" | "DOWN" | "LEFT" | "RIGHT") => (
+    <button
+      key={d}
+      type="button"
+      aria-label={`Move ${LOWER[d]}`}
+      style={{
+        width: "56px",
+        height: "56px",
+        backgroundColor: "#166534",
+        border: "2px solid #22c55e",
+        borderRadius: "8px",
+        color: "#22c55e",
+        fontSize: "24px",
+        cursor: "pointer",
+        touchAction: "none",
+        userSelect: "none",
+        WebkitUserSelect: "none",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      onPointerDown={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        // eslint-disable-next-line no-console
-        console.log("[joystick] native pointerdown", d);
         handleDirection(d);
-      };
-      el.addEventListener("pointerdown", onDown);
-      return () => el.removeEventListener("pointerdown", onDown);
-    }, [d]);
-    return (
-      <button
-        key={d}
-        ref={ref}
-        type="button"
-        aria-label={`Move ${LOWER[d]}`}
-        style={{
-          width: "56px",
-          height: "56px",
-          backgroundColor: "#166534",
-          border: "2px solid #22c55e",
-          borderRadius: "8px",
-          color: "#22c55e",
-          fontSize: "24px",
-          cursor: "pointer",
-          touchAction: "none",
-          userSelect: "none",
-          WebkitUserSelect: "none",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {ARROWS[d]}
-      </button>
-    );
-  };
+      }}
+    >
+      {ARROWS[d]}
+    </button>
+  );
 
   return (
     <div
@@ -115,9 +97,7 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
         {button("UP")}
         <div />
         {button("LEFT")}
-        <div
-          style={{ backgroundColor: "#1a1a1a", borderRadius: "50%" }}
-        />
+        <div style={{ backgroundColor: "#1a1a1a", borderRadius: "50%" }} />
         {button("RIGHT")}
         <div />
         {button("DOWN")}
