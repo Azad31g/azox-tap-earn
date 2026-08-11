@@ -4,6 +4,9 @@ import {
   GameScreen,
   resolveGameId,
 } from "@/components/azox/games/game-screen";
+import ShootGame from "@/components/azox/games/ShootGame";
+import { useAzox } from "@/components/azox/app-provider";
+
 
 export const Route = createFileRoute("/games/$game")({
   loader: ({ params }) => {
@@ -38,5 +41,9 @@ export const Route = createFileRoute("/games/$game")({
 
 function GameRoute() {
   const { game } = Route.useLoaderData();
+  const { addPoints } = useAzox();
+  if (game === "shoot") {
+    return <ShootGame onGameOver={(score) => addPoints(score)} />;
+  }
   return <GameScreen game={game} />;
 }
