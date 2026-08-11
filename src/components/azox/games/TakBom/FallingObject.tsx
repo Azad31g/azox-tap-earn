@@ -1,0 +1,75 @@
+import type { FallingObj } from "./types";
+
+export function FallingObject({
+  obj,
+  onTap,
+}: {
+  obj: FallingObj;
+  onTap: (obj: FallingObj) => void;
+}) {
+  const handle = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onTap(obj);
+  };
+
+  return (
+    <button
+      type="button"
+      onPointerDown={handle}
+      aria-label={obj.kind === "bomb" ? "Bomb" : "Star"}
+      className="absolute grid place-items-center"
+      style={{
+        left: `${obj.x}%`,
+        top: 0,
+        width: obj.size,
+        height: obj.size,
+        marginLeft: -obj.size / 2,
+        touchAction: "none",
+        animation: `takbom-fall ${obj.duration}s linear forwards`,
+      }}
+    >
+      {obj.kind === "star" ? (
+        <span
+          className="block"
+          style={{
+            width: "100%",
+            height: "100%",
+            color: "#22c55e",
+            filter: "drop-shadow(0 0 10px #22c55e) drop-shadow(0 0 20px #16a34a)",
+          }}
+        >
+          <svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true">
+            <g
+              stroke="currentColor"
+              strokeWidth="9"
+              strokeLinecap="round"
+              shapeRendering="crispEdges"
+            >
+              <line x1="50" y1="8" x2="50" y2="92" />
+              <line x1="8" y1="50" x2="92" y2="50" />
+              <line x1="20" y1="20" x2="80" y2="80" />
+              <line x1="80" y1="20" x2="20" y2="80" />
+            </g>
+            <circle cx="50" cy="50" r="10" fill="#dcfce7" />
+          </svg>
+        </span>
+      ) : (
+        <span
+          className="grid place-items-center rounded-full animate-pulse"
+          style={{
+            width: "100%",
+            height: "100%",
+            background: "radial-gradient(circle at 35% 30%, #fde047, #ca8a04)",
+            boxShadow: "0 0 14px #facc15, 0 0 28px rgba(250,204,21,0.6)",
+            border: "2px solid #fef08a",
+            fontSize: `${Math.round(obj.size * 0.5)}px`,
+            lineHeight: 1,
+          }}
+        >
+          💣
+        </span>
+      )}
+    </button>
+  );
+}
