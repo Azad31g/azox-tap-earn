@@ -43,42 +43,48 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
     onMove(dir);
   }, [dir, onMove]);
 
-  const button = (d: "UP" | "DOWN" | "LEFT" | "RIGHT") => (
-    <button
-      key={d}
-      type="button"
-      aria-label={`Move ${LOWER[d]}`}
-      style={{
-        width: "56px",
-        height: "56px",
-        backgroundColor: "#166534",
-        border: "2px solid #22c55e",
-        borderRadius: "8px",
-        color: "#22c55e",
-        fontSize: "24px",
-        cursor: "pointer",
-        touchAction: "none",
-        userSelect: "none",
-        WebkitUserSelect: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      onPointerDown={(e) => {
+  const button = (d: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
+    const ref = useRef<HTMLButtonElement>(null);
+    useEffect(() => {
+      const el = ref.current;
+      if (!el) return;
+      const onDown = (e: PointerEvent) => {
         e.preventDefault();
         e.stopPropagation();
         // eslint-disable-next-line no-console
-        console.log("[joystick] pointerdown", d);
+        console.log("[joystick] native pointerdown", d);
         handleDirection(d);
-      }}
-      onClick={() => {
-        // eslint-disable-next-line no-console
-        console.log("[joystick] click", d);
-      }}
-    >
-      {ARROWS[d]}
-    </button>
-  );
+      };
+      el.addEventListener("pointerdown", onDown);
+      return () => el.removeEventListener("pointerdown", onDown);
+    }, [d]);
+    return (
+      <button
+        key={d}
+        ref={ref}
+        type="button"
+        aria-label={`Move ${LOWER[d]}`}
+        style={{
+          width: "56px",
+          height: "56px",
+          backgroundColor: "#166534",
+          border: "2px solid #22c55e",
+          borderRadius: "8px",
+          color: "#22c55e",
+          fontSize: "24px",
+          cursor: "pointer",
+          touchAction: "none",
+          userSelect: "none",
+          WebkitUserSelect: "none",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        {ARROWS[d]}
+      </button>
+    );
+  };
 
   return (
     <div
