@@ -15,9 +15,10 @@ export function GamingPage() {
 
       <div className="grid grid-cols-2 gap-3">
         {GAMES.map((game) => (
-          <button
+          <Link
             key={game.id}
-            type="button"
+            to="/games/$game"
+            params={{ game: game.id }}
             className="glass group flex flex-col items-center gap-3 rounded-2xl p-4 text-center transition-transform active:scale-95 hover:border-accent/40"
           >
             <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden rounded-3xl border border-border bg-secondary/40 p-3">
@@ -35,7 +36,7 @@ export function GamingPage() {
             <span className="line-clamp-2 text-xs font-semibold leading-snug">
               {game.name}
             </span>
-          </button>
+          </Link>
         ))}
       </div>
 

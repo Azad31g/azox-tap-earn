@@ -20,8 +20,15 @@ export const GAME_IDS = [
 
 export type GameId = (typeof GAME_IDS)[number];
 
-export function isGameId(value: string): value is GameId {
-  return (GAME_IDS as readonly string[]).includes(value);
+const GAME_ALIASES: Record<string, GameId> = {
+  "clicker-frenzy": "clicker",
+  clicker: "clicker",
+};
+
+/** Resolve a URL param (including data-file ids like "clicker-frenzy") to a GameId. */
+export function resolveGameId(value: string): GameId | null {
+  if ((GAME_IDS as readonly string[]).includes(value)) return value as GameId;
+  return GAME_ALIASES[value] ?? null;
 }
 
 const IMAGE_FOR: Record<GameId, AzoxImageKey> = {

@@ -2,13 +2,14 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import {
   GAME_TITLES,
   GameScreen,
-  isGameId,
+  resolveGameId,
 } from "@/components/azox/games/game-screen";
 
 export const Route = createFileRoute("/games/$game")({
   loader: ({ params }) => {
-    if (!isGameId(params.game)) throw notFound();
-    return { game: params.game };
+    const game = resolveGameId(params.game);
+    if (!game) throw notFound();
+    return { game };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
