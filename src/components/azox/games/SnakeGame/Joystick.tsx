@@ -71,6 +71,10 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
         console.log("[joystick] pointerdown", d);
         handleDirection(d);
       }}
+      onClick={() => {
+        // eslint-disable-next-line no-console
+        console.log("[joystick] click", d);
+      }}
     >
       {ARROWS[d]}
     </button>
