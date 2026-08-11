@@ -8,8 +8,8 @@ import {
   type TakBomState,
 } from "./types";
 
-const MAX_OBJECTS = 18;
-const SPAWN_MS = 800;
+const MAX_OBJECTS = 35;
+const SPAWN_MS = 400;
 
 let idSeq = 1;
 
