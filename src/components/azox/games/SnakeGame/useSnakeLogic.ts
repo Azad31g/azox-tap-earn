@@ -115,7 +115,13 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
   const setDirection = useCallback((next: Direction) => {
     if (OPPOSITE[dirRef.current] === next || dirRef.current === next) return;
     queued.current = next;
+    setDir(next);
   }, []);
+
+  // keep the ref in sync with direction state for the game loop
+  useEffect(() => {
+    if (queued.current === null) dirRef.current = dir;
+  }, [dir]);
 
   const reset = useCallback(() => {
     const s = initialSnake();
