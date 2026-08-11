@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { Direction } from "./types";
 
 const ARROWS: Record<Direction, string> = {
@@ -24,35 +24,13 @@ const GRID_POSITIONS: { dir: Direction; gridArea: string }[] = [
 
 export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
   const [dir, setDir] = useState<Direction>("right");
-  const gridRef = useRef<HTMLDivElement>(null);
 
-  const handleDirection = useCallback((next: Direction) => {
+  const changeDirection = useCallback((next: Direction) => {
     setDir((prev) => {
       if (OPPOSITE[prev] === next) return prev;
       return next;
     });
   }, []);
-
-  useEffect(() => {
-    onMove(dir);
-  }, [dir, onMove]);
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-
-    const onPointerDown = (e: PointerEvent) => {
-      const target = e.target as HTMLElement;
-      const next = target.getAttribute("data-dir") as Direction | null;
-      if (!next) return;
-      e.preventDefault();
-      e.stopPropagation();
-      handleDirection(next);
-    };
-
-    grid.addEventListener("pointerdown", onPointerDown);
-    return () => grid.removeEventListener("pointerdown", onPointerDown);
-  }, [handleDirection]);
 
   return (
     <div
@@ -60,7 +38,6 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
       style={{ userSelect: "none", WebkitUserSelect: "none" }}
     >
       <div
-        ref={gridRef}
         style={{
           display: "grid",
           gridTemplateColumns: "56px 56px 56px",
@@ -77,9 +54,13 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
         {GRID_POSITIONS.map(({ dir, gridArea }) => (
           <button
             key={dir}
-            data-dir={dir}
             type="button"
             aria-label={`Move ${dir}`}
+            onPointerDown={(e) => {
+              e.preventDefault();
+              changeDirection(dir);
+              onMove(dir);
+            }}
             style={{
               gridArea,
               width: "56px",
@@ -108,3 +89,4 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
     </div>
   );
 }
+
