@@ -1,18 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Direction } from "./types";
 
-const ARROWS = {
-  UP: "↑",
-  DOWN: "↓",
-  LEFT: "←",
-  RIGHT: "→",
-} as const;
-
-const LOWER: Record<"UP" | "DOWN" | "LEFT" | "RIGHT", Direction> = {
-  UP: "up",
-  DOWN: "down",
-  LEFT: "left",
-  RIGHT: "right",
+const ARROWS: Record<Direction, string> = {
+  up: "↑",
+  down: "↓",
+  left: "←",
+  right: "→",
 };
 
 const OPPOSITE: Record<Direction, Direction> = {
@@ -22,81 +15,52 @@ const OPPOSITE: Record<Direction, Direction> = {
   right: "left",
 };
 
-export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
-  // eslint-disable-next-line no-console
-  console.log("[joystick] component render");
-  const [dir, setDir] = useState<Direction>("right");
-  const dirRef = useRef<Direction>("right");
-  dirRef.current = dir;
+const GRID_POSITIONS: { dir: Direction; gridArea: string }[] = [
+  { dir: "up", gridArea: "1 / 2" },
+  { dir: "left", gridArea: "2 / 1" },
+  { dir: "right", gridArea: "2 / 3" },
+  { dir: "down", gridArea: "3 / 2" },
+];
 
-  const handleDirection = useCallback(
-    (next: "UP" | "DOWN" | "LEFT" | "RIGHT") => {
-      setDir((prev) => {
-        if (OPPOSITE[prev] === LOWER[next]) return prev;
-        return LOWER[next];
-      });
-    },
-    [],
-  );
+export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
+  const [dir, setDir] = useState<Direction>("right");
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  const handleDirection = useCallback((next: Direction) => {
+    setDir((prev) => {
+      if (OPPOSITE[prev] === next) return prev;
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     onMove(dir);
   }, [dir, onMove]);
 
-  const button = (d: "UP" | "DOWN" | "LEFT" | "RIGHT") => (
-    <button
-      key={d}
-      type="button"
-      aria-label={`Move ${LOWER[d]}`}
-      style={{
-        width: "56px",
-        height: "56px",
-        backgroundColor: "#166534",
-        border: "2px solid #22c55e",
-        borderRadius: "8px",
-        color: "#22c55e",
-        fontSize: "24px",
-        cursor: "pointer",
-        touchAction: "none",
-        userSelect: "none",
-        WebkitUserSelect: "none",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-      onPointerDown={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        handleDirection(d);
-      }}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // eslint-disable-next-line no-console
-        console.log("[joystick] mousedown", d);
-        handleDirection(d);
-      }}
-      onTouchStart={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        // eslint-disable-next-line no-console
-        console.log("[joystick] touchstart", d);
-        handleDirection(d);
-      }}
-    >
-      {ARROWS[d]}
-    </button>
-  );
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+
+    const onPointerDown = (e: PointerEvent) => {
+      const target = e.target as HTMLElement;
+      const next = target.getAttribute("data-dir") as Direction | null;
+      if (!next) return;
+      e.preventDefault();
+      e.stopPropagation();
+      handleDirection(next);
+    };
+
+    grid.addEventListener("pointerdown", onPointerDown);
+    return () => grid.removeEventListener("pointerdown", onPointerDown);
+  }, [handleDirection]);
 
   return (
     <div
       className="flex justify-center py-4"
-      style={{
-        userSelect: "none",
-        WebkitUserSelect: "none",
-      }}
+      style={{ userSelect: "none", WebkitUserSelect: "none" }}
     >
       <div
+        ref={gridRef}
         style={{
           display: "grid",
           gridTemplateColumns: "56px 56px 56px",
@@ -110,14 +74,36 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
         }}
       >
         <div />
-        {button("UP")}
-        <div />
-        {button("LEFT")}
-        <div style={{ backgroundColor: "#1a1a1a", borderRadius: "50%" }} />
-        {button("RIGHT")}
-        <div />
-        {button("DOWN")}
-        <div />
+        {GRID_POSITIONS.map(({ dir, gridArea }) => (
+          <button
+            key={dir}
+            data-dir={dir}
+            type="button"
+            aria-label={`Move ${dir}`}
+            style={{
+              gridArea,
+              width: "56px",
+              height: "56px",
+              backgroundColor: "#166534",
+              border: "2px solid #22c55e",
+              borderRadius: "8px",
+              color: "#22c55e",
+              fontSize: "24px",
+              cursor: "pointer",
+              touchAction: "none",
+              userSelect: "none",
+              WebkitUserSelect: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {ARROWS[dir]}
+          </button>
+        ))}
+        <div
+          style={{ gridArea: "2 / 2", backgroundColor: "#1a1a1a", borderRadius: "50%" }}
+        />
       </div>
     </div>
   );
