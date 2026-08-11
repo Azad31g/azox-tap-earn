@@ -32,7 +32,7 @@ export const RANKS: Rank[] = [
 ];
 
 export function rankForPoints(points: number): Rank {
-  let current = RANKS[0];
+  let current: Rank = RANKS[0]!;
   for (const r of RANKS) {
     if (points >= r.threshold) current = r;
   }
