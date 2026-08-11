@@ -104,6 +104,9 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
   const growRef = useRef(0);
   const overRef = useRef(onGameOver);
   overRef.current = onGameOver;
+  const rocksRef = useRef<Item[]>([]);
+  rocksRef.current = rocks;
+
 
   useEffect(() => {
     setBest(readStorage<number>(SNAKE_BEST_KEY, 0));
