@@ -149,7 +149,10 @@ export function useAzoxBox() {
     }
     return idx;
   })();
-  const missed = !isActive && lastPassed >= 0 && !opened.includes(lastPassed);
+  const missedRecently =
+    lastPassed >= 0 &&
+    secondsFromMidnight - (schedule[lastPassed]! + SESSION_SECONDS) < 300;
+  const missed = !isActive && missedRecently && !opened.includes(lastPassed);
 
   useEffect(() => {
     if (sessionIndex === null) setJustOpened(false);
