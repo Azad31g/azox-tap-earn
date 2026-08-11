@@ -21,7 +21,7 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
     <div className="flex justify-center py-4">
       <div
         className="relative size-52 rounded-full border border-primary/40 bg-[radial-gradient(circle_at_50%_35%,rgba(255,255,255,0.06),rgba(0,0,0,0.9))]"
-        style={{ boxShadow: "0 0 30px hsl(var(--primary) / 0.25), inset 0 0 40px rgba(0,0,0,0.8)" }}
+        style={{ boxShadow: "0 0 30px rgba(163,230,53,0.25), inset 0 0 40px rgba(0,0,0,0.8)" }}
       >
         {BUTTONS.map(({ dir, label, pos, Icon }) => (
           <button
@@ -40,7 +40,7 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
             }`}
             style={
               active === dir
-                ? { boxShadow: "0 0 18px hsl(var(--primary) / 0.7)" }
+                ? { boxShadow: "0 0 18px rgba(163,230,53,0.7)" }
                 : undefined
             }
           >
