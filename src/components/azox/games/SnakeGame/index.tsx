@@ -13,14 +13,17 @@ export default function SnakeGame() {
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden bg-black text-white select-none">
-      <GameHeader
-        points={points}
-        onMenu={() => (game.state === "paused" ? game.resume() : game.pause())}
-      />
-      <ScoreCards score={game.score} best={game.best} />
+    <div className="fixed inset-0 z-50 min-h-[100dvh] w-full select-none overflow-y-auto bg-black text-white">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center">
+        <div className="w-full">
+          <GameHeader
+            points={points}
+            onMenu={() => (game.state === "paused" ? game.resume() : game.pause())}
+          />
+          <ScoreCards score={game.score} best={game.best} />
+        </div>
 
-      <div className="mt-3">
+      <div className="mt-3 flex w-full justify-center">
         <GameBoard
           snake={game.snake}
           items={game.items}
