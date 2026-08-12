@@ -3,7 +3,6 @@ import { Link } from "@tanstack/react-router";
 import { Play, Timer, Coins } from "lucide-react";
 import { ClickButton } from "@/components/azox/click-button";
 import { AzoxFooter } from "@/components/azox/footer";
-import { useAzox } from "@/components/azox/app-provider";
 import { CATEGORIES, RANKS } from "@/lib/azox-data";
 import { AZOX_IMAGES } from "@/lib/azox-images";
 import { Button } from "@/components/ui/button";
