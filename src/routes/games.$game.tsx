@@ -4,6 +4,7 @@ import {
   GameScreen,
   resolveGameId,
 } from "@/components/azox/games/game-screen";
+import AzoxWord from "@/components/azox/games/VideoAds";
 import AzoxBox from "@/components/azox/games/AzoxBox";
 import ClickerFrenzy from "@/components/azox/games/ClickerFrenzy";
 import GlobalButton from "@/components/azox/games/GlobalButton";
@@ -62,6 +63,9 @@ function GameRoute() {
   }
   if (game === "global-button") {
     return <GlobalButton />;
+  }
+  if (game === "video-ads") {
+    return <AzoxWord />;
   }
   if (game === "clicker") {
     return <ClickerFrenzy />;

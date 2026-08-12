@@ -57,9 +57,9 @@ export type Game = {
 export const GAMES: Game[] = [
   {
     id: "video-ads",
-    name: "AZOX Video Ad's",
+    name: "Azox Word",
     image: AZOX_IMAGES["video-ads"],
-    tag: "Earn",
+    tag: "Daily",
   },
   {
     id: "global-button",
