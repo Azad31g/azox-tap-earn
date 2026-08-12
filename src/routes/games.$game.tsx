@@ -63,6 +63,9 @@ function GameRoute() {
   if (game === "global-button") {
     return <GlobalButton />;
   }
+  if (game === "clicker") {
+    return <ClickerFrenzy />;
+  }
 
   return <GameScreen game={game} />;
 }
