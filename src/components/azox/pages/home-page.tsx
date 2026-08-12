@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Play, Timer, Coins } from "lucide-react";
 import { ClickButton } from "@/components/azox/click-button";
 import { AzoxFooter } from "@/components/azox/footer";
@@ -23,18 +24,7 @@ function useCountdown(seconds: number) {
 }
 
 export function HomePage() {
-  const { addPoints } = useAzox();
   const time = useCountdown(3 * 3600 + 42 * 60 + 12);
-  const [watching, setWatching] = useState(false);
-
-  const watchAd = () => {
-    if (watching) return;
-    setWatching(true);
-    window.setTimeout(() => {
-      addPoints(75);
-      setWatching(false);
-    }, 1500);
-  };
 
   return (
     <div className="flex flex-col gap-5">
