@@ -50,7 +50,7 @@ export const GAME_TITLES: Record<GameId, string> = {
   shoot: "AZOX Shoot",
   snake: "AZOX Snake",
   "tak-bom": "AZOX Tak Bom",
-  "video-ads": "AZOX Video Ad's",
+  "video-ads": "Azox Word",
 };
 
 function GameShell({

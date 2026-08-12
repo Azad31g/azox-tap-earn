@@ -65,13 +65,13 @@ export function HomePage() {
       <section className="glass flex items-center gap-3 rounded-2xl p-4">
         <img
           src={AZOX_IMAGES["video-ads"]}
-          alt="AZOX Video Ads"
+          alt="Azox Word"
           width={56}
           height={56}
           className="size-14 shrink-0 rounded-2xl object-contain"
         />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{"AZOX Video Ad's"}</p>
+          <p className="text-sm font-semibold">{"Azox Word"}</p>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
             <Coins className="size-3.5 text-gold" aria-hidden="true" /> Watch to
             earn +75
