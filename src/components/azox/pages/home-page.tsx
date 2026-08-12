@@ -61,7 +61,7 @@ export function HomePage() {
         </span>
       </section>
 
-      {/* Video Ads */}
+      {/* Azox Word */}
       <section className="glass flex items-center gap-3 rounded-2xl p-4">
         <img
           src={AZOX_IMAGES["video-ads"]}
@@ -71,21 +71,23 @@ export function HomePage() {
           className="size-14 shrink-0 rounded-2xl object-contain"
         />
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{"Azox Word"}</p>
+          <p className="text-sm font-semibold">Azox Word</p>
           <p className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Coins className="size-3.5 text-gold" aria-hidden="true" /> Watch to
-            earn +75
+            <Coins className="size-3.5 text-gold" aria-hidden="true" /> Unscramble
+            5 daily words • +80 each
           </p>
         </div>
         <Button
-          onClick={watchAd}
-          disabled={watching}
+          asChild
           className="rounded-xl bg-accent font-semibold text-accent-foreground hover:bg-accent/90"
         >
-          <Play className="size-4" aria-hidden="true" />
-          {watching ? "Playing…" : "Watch"}
+          <Link to="/games/$game" params={{ game: "video-ads" }}>
+            <Play className="size-4" aria-hidden="true" />
+            Play
+          </Link>
         </Button>
       </section>
+
 
       {/* Main click button */}
       <section className="flex flex-col items-center gap-2 py-4">
