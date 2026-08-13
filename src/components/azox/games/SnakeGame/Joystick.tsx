@@ -1,106 +1,50 @@
-import { useCallback, useState } from "react";
-import type { Direction, GameState } from "./types";
-
-const ARROWS: Record<Direction, string> = {
-  up: "↑",
-  down: "↓",
-  left: "←",
-  right: "→",
-};
-
-const OPPOSITE: Record<Direction, Direction> = {
-  up: "down",
-  down: "up",
-  left: "right",
-  right: "left",
-};
-
-const GRID_POSITIONS: { dir: Direction; gridArea: string }[] = [
-  { dir: "up", gridArea: "1 / 2" },
-  { dir: "left", gridArea: "2 / 1" },
-  { dir: "right", gridArea: "2 / 3" },
-  { dir: "down", gridArea: "3 / 2" },
-];
-
-export function Joystick({
-  gameState,
-  startGame,
-  onMove,
-}: {
-  gameState: GameState;
-  startGame: () => void;
-  onMove: (d: Direction) => void;
-}) {
-  const [dir, setDir] = useState<Direction>("right");
-
-  const changeDirection = useCallback((next: Direction) => {
-    setDir((prev) => {
-      if (OPPOSITE[prev] === next) return prev;
-      onMove(next);
-      return next;
-    });
-  }, [onMove]);
+function Joystick({ onMove }: { onMove: (d: string) => void }) {
+  const btn = (dir: string, label: string) => (
+    <button
+      onPointerDown={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        onMove(dir)
+      }}
+      style={{
+        width: 64,
+        height: 64,
+        fontSize: 28,
+        background: '#166534',
+        color: '#4ade80',
+        border: '2px solid #4ade80',
+        borderRadius: 12,
+        cursor: 'pointer',
+        touchAction: 'none',
+        userSelect: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      {label}
+    </button>
+  )
 
   return (
-    <div
-      className="flex justify-center py-4"
-      style={{ touchAction: "none", userSelect: "none", WebkitUserSelect: "none" }}
-    >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "56px 56px 56px",
-          gridTemplateRows: "56px 56px 56px",
-          gap: "4px",
-          touchAction: "none",
-          userSelect: "none",
-          WebkitUserSelect: "none",
-          position: "relative",
-          zIndex: 10,
-        }}
-      >
-        <div />
-        {GRID_POSITIONS.map(({ dir, gridArea }) => (
-          <button
-            key={dir}
-            type="button"
-            aria-label={`Move ${dir}`}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              if (gameState !== "playing") {
-                startGame();
-              } else {
-                changeDirection(dir);
-              }
-            }}
-            style={{
-              gridArea,
-              width: "56px",
-              height: "56px",
-              backgroundColor: "#166534",
-              border: "2px solid #22c55e",
-              borderRadius: "8px",
-              color: "#22c55e",
-              fontSize: "24px",
-              cursor: "pointer",
-              touchAction: "none",
-              userSelect: "none",
-              WebkitUserSelect: "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            {ARROWS[dir]}
-          </button>
-        ))}
-        <div
-          style={{ gridArea: "2 / 2", backgroundColor: "#1a1a1a", borderRadius: "50%" }}
-        />
-      </div>
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '64px 64px 64px',
+      gridTemplateRows: '64px 64px 64px',
+      gap: 8,
+      touchAction: 'none',
+    }}>
+      <div/>
+      {btn('up', '↑')}
+      <div/>
+      {btn('left', '←')}
+      <div style={{ background: '#1a1a1a', borderRadius: '50%' }}/>
+      {btn('right', '→')}
+      <div/>
+      {btn('down', '↓')}
+      <div/>
     </div>
-  );
+  )
 }
 
-
-
+export default Joystick

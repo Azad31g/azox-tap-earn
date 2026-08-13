@@ -141,10 +141,11 @@ export default function SnakeGame() {
       </div>
 
         <Joystick
-          gameState={game.state}
-          startGame={game.start}
-          onMove={(d) => {
-            game.setDirection(d);
+          onMove={(dir) => {
+            if (dir === 'up') game.setDirection('up')
+            if (dir === 'down') game.setDirection('down')
+            if (dir === 'left') game.setDirection('left')
+            if (dir === 'right') game.setDirection('right')
           }}
         />
       </div>
