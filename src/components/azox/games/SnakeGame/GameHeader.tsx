@@ -43,7 +43,7 @@ export function GameHeader({
         <button
           type="button"
           aria-label="Game menu"
-          onClick={onMenu}
+          onPointerDown={onMenu}
           className="grid size-11 place-items-center rounded-xl text-foreground/80"
         >
           <Menu className="size-6" aria-hidden="true" />
