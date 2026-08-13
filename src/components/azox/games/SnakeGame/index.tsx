@@ -42,7 +42,7 @@ export default function SnakeGame() {
                 e.stopPropagation();
                 game.start();
               }}
-              className="absolute inset-0 grid place-items-center bg-black/70 text-center backdrop-blur-sm"
+              className="absolute inset-0 z-50 grid place-items-center bg-black/70 text-center backdrop-blur-sm"
             >
               <div>
                 <div className="text-2xl font-extrabold">
@@ -64,7 +64,7 @@ export default function SnakeGame() {
           ) : null}
 
           {game.state === "paused" ? (
-            <div className="absolute inset-0 grid place-items-center bg-black/80 backdrop-blur-sm">
+            <div className="absolute inset-0 z-50 grid place-items-center bg-black/80 backdrop-blur-sm">
               <div className="w-52 text-center">
                 <div className="text-xl font-extrabold tracking-widest">PAUSED</div>
                 <div className="mt-4 flex flex-col gap-2">
@@ -100,7 +100,7 @@ export default function SnakeGame() {
           ) : null}
 
           {game.state === "over" ? (
-            <div className="absolute inset-0 grid place-items-center bg-black/85 backdrop-blur-sm">
+            <div className="absolute inset-0 z-50 grid place-items-center bg-black/85 backdrop-blur-sm">
               <div className="w-56 text-center">
                 <div className="text-2xl font-extrabold tracking-tight text-red-500">
                   GAME OVER
