@@ -38,10 +38,13 @@ export default function SnakeGame() {
           {game.state === "start" ? (
             <button
               type="button"
-              onPointerDown={game.start}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                game.start();
+              }}
               className="absolute inset-0 grid place-items-center bg-black/70 text-center backdrop-blur-sm"
             >
-              <div onPointerDown={game.start}>
+              <div>
                 <div className="text-2xl font-extrabold">
                   AZOX <span className="text-primary">Snake</span>
                 </div>
@@ -67,14 +70,20 @@ export default function SnakeGame() {
                 <div className="mt-4 flex flex-col gap-2">
                   <button
                     type="button"
-                    onPointerDown={game.resume}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      game.resume();
+                    }}
                     className="rounded-xl bg-primary py-2 text-sm font-bold text-primary-foreground"
                   >
                     Resume
                   </button>
                   <button
                     type="button"
-                    onPointerDown={game.start}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      game.start();
+                    }}
                     className="rounded-xl border border-white/15 py-2 text-sm font-semibold"
                   >
                     Restart
@@ -110,7 +119,10 @@ export default function SnakeGame() {
                 <div className="mt-4 flex flex-col gap-2">
                   <button
                     type="button"
-                    onPointerDown={game.start}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      game.start();
+                    }}
                     className="rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground"
                   >
                     PLAY AGAIN
