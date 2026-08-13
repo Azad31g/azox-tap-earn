@@ -107,6 +107,8 @@ export type SocialTask = {
   label: string;
   points: number;
   url: string;
+  /** Telegram public group/channel username used for membership verification. */
+  verifyChat?: string;
 };
 
 export type SocialTaskGroup = {
@@ -127,15 +129,17 @@ export const SOCIAL_TASKS: SocialTaskGroup[] = [
         id: "tg-1",
         platform: "Telegram",
         label: "Join AZOX Community",
-        points: 100,
+        points: 500,
         url: "https://t.me/AZOX_Coin",
+        verifyChat: "AZOX_Coin",
       },
       {
         id: "tg-2",
         platform: "Telegram",
         label: "Join AZOX Coin",
-        points: 100,
+        points: 500,
         url: "https://t.me/AZOX_Community",
+        verifyChat: "AZOX_Community",
       },
     ],
   },

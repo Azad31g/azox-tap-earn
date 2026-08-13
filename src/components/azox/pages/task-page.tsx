@@ -9,9 +9,14 @@ import {
   MessagesSquare,
   ExternalLink,
   Check,
+  Loader2,
+  ShieldCheck,
 } from "lucide-react";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { useAzox } from "@/components/azox/app-provider";
+import { verifyTelegramMembership } from "@/lib/telegram-verify.functions";
 import {
   SOCIAL_TASKS,
   type SocialTask,
@@ -30,10 +35,13 @@ const PLATFORM_ICONS: Record<string, typeof Send> = {
 };
 
 function TaskRow({ task, color }: { task: SocialTask; color: string }) {
-  const { completedTasks, completeTask } = useAzox();
+  const { completedTasks, completeTask, user } = useAzox();
   const claimed = completedTasks.has(task.id);
   const [state, setState] = useState<"idle" | "claimable" | "done">("idle");
+  const [verifying, setVerifying] = useState(false);
+  const verify = useServerFn(verifyTelegramMembership);
   const status = claimed ? "done" : state;
+  const needsVerification = Boolean(task.verifyChat);
 
   const handleOpen = () => {
     window.open(task.url, "_blank", "noopener,noreferrer");
@@ -43,7 +51,34 @@ function TaskRow({ task, color }: { task: SocialTask; color: string }) {
   const handleClaim = () => {
     completeTask(task.id);
     setState("done");
+    toast.success(`+${task.points} points added`);
   };
+
+  const handleVerify = async () => {
+    const telegramId = Number(user.id);
+    if (!user.isTelegram || !Number.isFinite(telegramId)) {
+      toast.error("Open the app inside Telegram to verify membership");
+      return;
+    }
+    setVerifying(true);
+    try {
+      const res = await verify({
+        data: { telegramId, chatUsername: task.verifyChat! },
+      });
+      if (res.member) {
+        handleClaim();
+      } else if (!res.ok && res.error === "not_configured") {
+        toast.error("Membership check is not configured yet");
+      } else {
+        toast.error("❌ Please join the group first");
+      }
+    } catch {
+      toast.error("Could not verify right now, try again");
+    } finally {
+      setVerifying(false);
+    }
+  };
+
 
   return (
     <div className="flex items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5">
@@ -56,14 +91,30 @@ function TaskRow({ task, color }: { task: SocialTask; color: string }) {
           <Check className="size-4" aria-hidden="true" /> Done
         </span>
       ) : status === "claimable" ? (
-        <Button
-          size="sm"
-          onClick={handleClaim}
-          className="rounded-lg bg-success font-semibold text-success-foreground hover:bg-success/90"
-        >
-          <Check className="size-4" aria-hidden="true" />
-          Claim
-        </Button>
+        needsVerification ? (
+          <Button
+            size="sm"
+            onClick={handleVerify}
+            disabled={verifying}
+            className="rounded-lg bg-[#229ED9] font-semibold text-white hover:bg-[#229ED9]/90"
+          >
+            {verifying ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <ShieldCheck className="size-4" aria-hidden="true" />
+            )}
+            {verifying ? "Checking…" : "Check Membership"}
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            onClick={handleClaim}
+            className="rounded-lg bg-success font-semibold text-success-foreground hover:bg-success/90"
+          >
+            <Check className="size-4" aria-hidden="true" />
+            Claim
+          </Button>
+        )
       ) : (
         <Button
           size="sm"
