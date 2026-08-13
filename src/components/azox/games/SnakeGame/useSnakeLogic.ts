@@ -158,12 +158,14 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
       (Date.now() < boostUntil ? 0.75 : 1),
   );
 
-  // periodic new rocks
+  // periodic new rocks: 1 every 15s, capped at MAX_ROCKS
   useEffect(() => {
     if (state !== "playing") return;
     const t = window.setInterval(() => {
-      setRocks((prev) => [...prev, ...makeRocks(snake, 2, prev)]);
-    }, 30000);
+      setRocks((prev) =>
+        prev.length >= MAX_ROCKS ? prev : [...prev, ...makeRocks(snake, 1, prev)],
+      );
+    }, 15000);
     return () => window.clearInterval(t);
   }, [state, snake]);
 
