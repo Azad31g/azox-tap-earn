@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useAzox } from "@/components/azox/app-provider";
 import { GameBoard } from "./GameBoard";
 import { GameHeader } from "./GameHeader";
-import { Joystick } from "./Joystick";
+import Joystick from "./Joystick";
 import { ScoreCards } from "./ScoreCards";
 import { useSnakeLogic } from "./useSnakeLogic";
 
@@ -141,7 +141,7 @@ export default function SnakeGame() {
       </div>
 
         <Joystick
-          onMove={(dir) => {
+          onMove={(dir: string) => {
             if (dir === 'up') game.setDirection('up')
             if (dir === 'down') game.setDirection('down')
             if (dir === 'left') game.setDirection('left')
