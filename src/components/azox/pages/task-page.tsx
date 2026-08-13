@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Gift,
   Send,
@@ -31,11 +32,17 @@ const PLATFORM_ICONS: Record<string, typeof Send> = {
 function TaskRow({ task, color }: { task: SocialTask; color: string }) {
   const { completedTasks, completeTask } = useAzox();
   const claimed = completedTasks.has(task.id);
+  const [state, setState] = useState<"idle" | "claimable" | "done">("idle");
+  const status = claimed ? "done" : state;
 
   const handleOpen = () => {
-    if (claimed) return;
     window.open(task.url, "_blank", "noopener,noreferrer");
+    setState("claimable");
+  };
+
+  const handleClaim = () => {
     completeTask(task.id);
+    setState("done");
   };
 
   return (
@@ -44,10 +51,19 @@ function TaskRow({ task, color }: { task: SocialTask; color: string }) {
         <p className="truncate text-sm font-medium">{task.label}</p>
         <p className="text-xs font-semibold text-gold">+{task.points}</p>
       </div>
-      {claimed ? (
+      {status === "done" ? (
         <span className="flex items-center gap-1 rounded-lg bg-success/15 px-3 py-1.5 text-xs font-semibold text-success">
           <Check className="size-4" aria-hidden="true" /> Done
         </span>
+      ) : status === "claimable" ? (
+        <Button
+          size="sm"
+          onClick={handleClaim}
+          className="rounded-lg bg-success font-semibold text-success-foreground hover:bg-success/90"
+        >
+          <Check className="size-4" aria-hidden="true" />
+          Claim
+        </Button>
       ) : (
         <Button
           size="sm"
@@ -72,11 +88,11 @@ function TaskGroup({ group }: { group: SocialTaskGroup }) {
     <section className="flex flex-col gap-2">
       <div
         className="flex items-center gap-2 rounded-xl border-l-4 bg-secondary/30 px-3 py-2"
-        style={{ borderLeftColor: group.color }}
+        style={{ borderLeftColor: iconColor }}
       >
         <span
           className="flex size-7 items-center justify-center rounded-lg"
-          style={{ backgroundColor: `${group.color}26`, color: iconColor }}
+          style={{ backgroundColor: `${iconColor}26`, color: iconColor }}
         >
           <Icon className="size-4" aria-hidden="true" />
         </span>
