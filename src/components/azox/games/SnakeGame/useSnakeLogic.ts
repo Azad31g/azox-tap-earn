@@ -12,6 +12,7 @@ import {
 
 const START_SPEED = 200;
 const MIN_SPEED = 100;
+const MAX_ROCKS = 8;
 
 const OPPOSITE: Record<Direction, Direction> = {
   up: "down",
