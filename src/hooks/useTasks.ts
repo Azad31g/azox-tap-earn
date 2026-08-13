@@ -34,18 +34,19 @@ export function useTasks(onEarn?: (amount: number) => void) {
 
   const completeTask = useCallback(
     (id: string) => {
-      let points = 0;
-      setState((prev) => {
-        if (prev.completed.includes(id)) return prev;
-        points =
-          SOCIAL_TASKS.flatMap((g) => g.tasks).find((t) => t.id === id)?.points ??
-          0;
-        return { ...prev, completed: [...prev.completed, id] };
-      });
+      if (state.completed.includes(id)) return 0;
+      const points =
+        SOCIAL_TASKS.flatMap((g) => g.tasks).find((t) => t.id === id)?.points ??
+        0;
+      setState((prev) =>
+        prev.completed.includes(id)
+          ? prev
+          : { ...prev, completed: [...prev.completed, id] },
+      );
       if (points > 0) onEarn?.(points);
       return points;
     },
-    [onEarn],
+    [onEarn, state.completed],
   );
 
   const dailyClaimed = hydrated && state.dailyClaimedOn === todayKey();
