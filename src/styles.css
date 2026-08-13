@@ -285,3 +285,9 @@
   80% { transform: translateX(5px); }
 }
 .animate-azox-shake { animation: azox-shake 0.4s ease-in-out; }
+
+@keyframes snake-rock-flash {
+  0% { opacity: 0; transform: scale(1.8); filter: brightness(3); }
+  40% { opacity: 1; filter: brightness(2.2); }
+  100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+}

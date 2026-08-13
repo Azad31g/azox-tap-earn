@@ -12,6 +12,7 @@ import {
 
 const START_SPEED = 200;
 const MIN_SPEED = 100;
+const MAX_ROCKS = 8;
 
 const OPPOSITE: Record<Direction, Direction> = {
   up: "down",
@@ -158,12 +159,14 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
       (Date.now() < boostUntil ? 0.75 : 1),
   );
 
-  // periodic new rocks
+  // periodic new rocks: 1 every 15s, capped at MAX_ROCKS
   useEffect(() => {
     if (state !== "playing") return;
     const t = window.setInterval(() => {
-      setRocks((prev) => [...prev, ...makeRocks(snake, 2, prev)]);
-    }, 30000);
+      setRocks((prev) =>
+        prev.length >= MAX_ROCKS ? prev : [...prev, ...makeRocks(snake, 1, prev)],
+      );
+    }, 15000);
     return () => window.clearInterval(t);
   }, [state, snake]);
 
@@ -240,11 +243,11 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
           if (hitIdx === -1) return its;
           const hit = its[hitIdx]!;
           if (hit.kind === "coin") {
-            setScore((s) => s + 10);
+            setScore((s) => s + 8);
             growRef.current += 1;
             setEaten((e) => e + 1);
           } else if (hit.kind === "diamond") {
-            setScore((s) => s + 50);
+            setScore((s) => s + 30);
             growRef.current += 3;
             setEaten((e) => e + 1);
           } else if (hit.kind === "heart") {

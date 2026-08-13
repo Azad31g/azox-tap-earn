@@ -1,5 +1,5 @@
 export const BOXES_PER_DAY = 20;
-export const SESSION_SECONDS = 70;
+export const SESSION_SECONDS = 90;
 export const MAX_WINNERS = 65000;
 export const BOX_REWARD = 1600;
 

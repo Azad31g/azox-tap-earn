@@ -104,7 +104,12 @@ export function GameBoard({
             <span
               aria-hidden="true"
               className="block size-[70%]"
-              style={ITEM_STYLE[it.kind]}
+              style={{
+                ...ITEM_STYLE[it.kind],
+                ...(it.kind === "rock"
+                  ? { animation: "snake-rock-flash 0.5s ease-out" }
+                  : null),
+              }}
             />
           </div>
         ))}
