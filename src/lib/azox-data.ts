@@ -142,6 +142,7 @@ export const SOCIAL_TASKS: SocialTaskGroup[] = [
   {
     platform: "X (Twitter)",
     color: "#000000",
+    accent: "#FFFFFF",
     tasks: [
       {
         id: "x-1",

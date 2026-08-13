@@ -31,11 +31,17 @@ const PLATFORM_ICONS: Record<string, typeof Send> = {
 function TaskRow({ task, color }: { task: SocialTask; color: string }) {
   const { completedTasks, completeTask } = useAzox();
   const claimed = completedTasks.has(task.id);
+  const [state, setState] = useState<"idle" | "claimable" | "done">("idle");
+  const status = claimed ? "done" : state;
 
   const handleOpen = () => {
-    if (claimed) return;
     window.open(task.url, "_blank", "noopener,noreferrer");
+    setState("claimable");
+  };
+
+  const handleClaim = () => {
     completeTask(task.id);
+    setState("done");
   };
 
   return (
@@ -44,10 +50,19 @@ function TaskRow({ task, color }: { task: SocialTask; color: string }) {
         <p className="truncate text-sm font-medium">{task.label}</p>
         <p className="text-xs font-semibold text-gold">+{task.points}</p>
       </div>
-      {claimed ? (
+      {status === "done" ? (
         <span className="flex items-center gap-1 rounded-lg bg-success/15 px-3 py-1.5 text-xs font-semibold text-success">
           <Check className="size-4" aria-hidden="true" /> Done
         </span>
+      ) : status === "claimable" ? (
+        <Button
+          size="sm"
+          onClick={handleClaim}
+          className="rounded-lg bg-success font-semibold text-success-foreground hover:bg-success/90"
+        >
+          <Check className="size-4" aria-hidden="true" />
+          Claim
+        </Button>
       ) : (
         <Button
           size="sm"
