@@ -637,17 +637,17 @@ export class Game {
       case "small":
         e.vy = 90 + d * 6;
         e.hp = 1; e.maxHp = 1; e.r = 22; e.w = 44; e.h = 44;
-        e.fireRate = 2.2; e.spread = 0; e.score = 10;
+        e.fireRate = 2.2; e.spread = 0; e.score = 5;
         break;
       case "medium":
         e.vy = 70 + d * 5;
         e.hp = 2 + Math.floor(d / 4); e.maxHp = e.hp; e.r = 26; e.w = 52; e.h = 52;
-        e.fireRate = 1.6; e.spread = 0; e.score = 20;
+        e.fireRate = 1.6; e.spread = 0; e.score = 10;
         break;
       case "heavy":
         e.vy = 50 + d * 3;
         e.hp = 4 + Math.floor(d / 2); e.maxHp = e.hp; e.r = 32; e.w = 64; e.h = 64;
-        e.fireRate = 1.4; e.spread = 2; e.score = 30;
+        e.fireRate = 1.4; e.spread = 2; e.score = 15;
         break;
       case "kamikaze":
         e.vy = 120 + d * 8; e.vx = 0;
