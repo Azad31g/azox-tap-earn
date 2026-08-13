@@ -140,6 +140,7 @@ export function GameBoard({
                 width: `${cell}%`,
                 height: `${cell}%`,
                 zIndex: snake.length - i,
+                pointerEvents: "none",
               }}
             >
               <span
