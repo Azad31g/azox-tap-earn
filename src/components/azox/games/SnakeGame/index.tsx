@@ -13,7 +13,10 @@ export default function SnakeGame() {
   });
 
   return (
-    <div className="fixed inset-0 z-50 min-h-[100dvh] w-full select-none overflow-y-auto bg-black text-white">
+    <div
+      className="fixed inset-0 z-50 min-h-[100dvh] w-full select-none overflow-y-auto bg-black text-white"
+      style={{ touchAction: "none", userSelect: "none" }}
+    >
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-[600px] flex-col items-center">
         <div className="w-full">
           <GameHeader
@@ -28,13 +31,18 @@ export default function SnakeGame() {
           snake={game.snake}
           items={game.items}
           rocks={game.rocks}
+          gameState={game.state}
+          onStart={game.start}
           onSwipe={game.setDirection}
         >
           {game.state === "start" ? (
             <button
               type="button"
-              onClick={game.start}
-              className="absolute inset-0 grid place-items-center bg-black/70 text-center backdrop-blur-sm"
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                game.start();
+              }}
+              className="absolute inset-0 z-50 grid place-items-center bg-black/70 text-center backdrop-blur-sm"
             >
               <div>
                 <div className="text-2xl font-extrabold">
@@ -56,20 +64,26 @@ export default function SnakeGame() {
           ) : null}
 
           {game.state === "paused" ? (
-            <div className="absolute inset-0 grid place-items-center bg-black/80 backdrop-blur-sm">
+            <div className="absolute inset-0 z-50 grid place-items-center bg-black/80 backdrop-blur-sm">
               <div className="w-52 text-center">
                 <div className="text-xl font-extrabold tracking-widest">PAUSED</div>
                 <div className="mt-4 flex flex-col gap-2">
                   <button
                     type="button"
-                    onClick={game.resume}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      game.resume();
+                    }}
                     className="rounded-xl bg-primary py-2 text-sm font-bold text-primary-foreground"
                   >
                     Resume
                   </button>
                   <button
                     type="button"
-                    onClick={game.start}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      game.start();
+                    }}
                     className="rounded-xl border border-white/15 py-2 text-sm font-semibold"
                   >
                     Restart
@@ -86,7 +100,7 @@ export default function SnakeGame() {
           ) : null}
 
           {game.state === "over" ? (
-            <div className="absolute inset-0 grid place-items-center bg-black/85 backdrop-blur-sm">
+            <div className="absolute inset-0 z-50 grid place-items-center bg-black/85 backdrop-blur-sm">
               <div className="w-56 text-center">
                 <div className="text-2xl font-extrabold tracking-tight text-red-500">
                   GAME OVER
@@ -105,7 +119,10 @@ export default function SnakeGame() {
                 <div className="mt-4 flex flex-col gap-2">
                   <button
                     type="button"
-                    onClick={game.start}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      game.start();
+                    }}
                     className="rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground"
                   >
                     PLAY AGAIN
@@ -124,6 +141,8 @@ export default function SnakeGame() {
       </div>
 
         <Joystick
+          gameState={game.state}
+          startGame={game.start}
           onMove={(d) => {
             game.setDirection(d);
           }}

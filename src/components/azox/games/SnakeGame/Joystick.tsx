@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import type { Direction } from "./types";
+import type { Direction, GameState } from "./types";
 
 const ARROWS: Record<Direction, string> = {
   up: "↑",
@@ -22,7 +22,15 @@ const GRID_POSITIONS: { dir: Direction; gridArea: string }[] = [
   { dir: "down", gridArea: "3 / 2" },
 ];
 
-export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
+export function Joystick({
+  gameState,
+  startGame,
+  onMove,
+}: {
+  gameState: GameState;
+  startGame: () => void;
+  onMove: (d: Direction) => void;
+}) {
   const [dir, setDir] = useState<Direction>("right");
 
   const changeDirection = useCallback((next: Direction) => {
@@ -59,7 +67,11 @@ export function Joystick({ onMove }: { onMove: (d: Direction) => void }) {
             aria-label={`Move ${dir}`}
             onPointerDown={(e) => {
               e.preventDefault();
-              changeDirection(dir);
+              if (gameState !== "playing") {
+                startGame();
+              } else {
+                changeDirection(dir);
+              }
             }}
             style={{
               gridArea,

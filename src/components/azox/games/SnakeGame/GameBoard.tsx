@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { GRID, type Direction, type Item, type Position } from "./types";
+import { GRID, type Direction, type GameState, type Item, type Position } from "./types";
 
 const ITEM_STYLE: Record<Item["kind"], React.CSSProperties> = {
   coin: {
@@ -34,12 +34,16 @@ export function GameBoard({
   snake,
   items,
   rocks,
+  gameState,
+  onStart,
   onSwipe,
   children,
 }: {
   snake: Position[];
   items: Item[];
   rocks: Item[];
+  gameState: GameState;
+  onStart: () => void;
   onSwipe: (d: Direction) => void;
   children?: React.ReactNode;
 }) {
@@ -47,6 +51,10 @@ export function GameBoard({
   const cell = 100 / GRID;
 
   const handleStart = (x: number, y: number) => {
+    if (gameState !== "playing") {
+      onStart();
+      return;
+    }
     startRef.current = { x, y };
   };
   const handleEnd = (x: number, y: number) => {
@@ -72,6 +80,10 @@ export function GameBoard({
         onPointerCancel={() => (startRef.current = null)}
         onTouchStart={(e) => {
           e.preventDefault();
+          if (gameState !== "playing") {
+            onStart();
+            return;
+          }
           const t = e.touches[0];
           if (t) handleStart(t.clientX, t.clientY);
         }}
@@ -99,6 +111,7 @@ export function GameBoard({
               top: `${it.pos.y * cell}%`,
               width: `${cell}%`,
               height: `${cell}%`,
+              pointerEvents: "none",
             }}
           >
             <span
@@ -127,6 +140,7 @@ export function GameBoard({
                 width: `${cell}%`,
                 height: `${cell}%`,
                 zIndex: snake.length - i,
+                pointerEvents: "none",
               }}
             >
               <span
