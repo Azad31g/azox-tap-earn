@@ -44,7 +44,7 @@ export function Joystick({
   return (
     <div
       className="flex justify-center py-4"
-      style={{ userSelect: "none", WebkitUserSelect: "none" }}
+      style={{ touchAction: "none", userSelect: "none", WebkitUserSelect: "none" }}
     >
       <div
         style={{
