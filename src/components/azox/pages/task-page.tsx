@@ -88,11 +88,11 @@ function TaskGroup({ group }: { group: SocialTaskGroup }) {
     <section className="flex flex-col gap-2">
       <div
         className="flex items-center gap-2 rounded-xl border-l-4 bg-secondary/30 px-3 py-2"
-        style={{ borderLeftColor: group.color }}
+        style={{ borderLeftColor: iconColor }}
       >
         <span
           className="flex size-7 items-center justify-center rounded-lg"
-          style={{ backgroundColor: `${group.color}26`, color: iconColor }}
+          style={{ backgroundColor: `${iconColor}26`, color: iconColor }}
         >
           <Icon className="size-4" aria-hidden="true" />
         </span>
