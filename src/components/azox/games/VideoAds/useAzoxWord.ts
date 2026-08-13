@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAzox } from "@/components/azox/app-provider";
 import { haptic } from "@/lib/telegram";
 
-export const SECONDS_PER_WORD = 22;
+export const SECONDS_PER_WORD = 60;
 export const POINTS_PER_WORD = 80;
 export const WORDS_PER_DAY = 5;
 export const MAX_DAILY_POINTS = POINTS_PER_WORD * WORDS_PER_DAY;

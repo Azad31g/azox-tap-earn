@@ -240,11 +240,11 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
           if (hitIdx === -1) return its;
           const hit = its[hitIdx]!;
           if (hit.kind === "coin") {
-            setScore((s) => s + 10);
+            setScore((s) => s + 8);
             growRef.current += 1;
             setEaten((e) => e + 1);
           } else if (hit.kind === "diamond") {
-            setScore((s) => s + 50);
+            setScore((s) => s + 30);
             growRef.current += 3;
             setEaten((e) => e + 1);
           } else if (hit.kind === "heart") {
