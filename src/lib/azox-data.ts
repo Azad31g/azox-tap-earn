@@ -106,169 +106,235 @@ export type SocialTask = {
   platform: string;
   label: string;
   points: number;
+  url: string;
 };
 
-export const SOCIAL_TASKS: { platform: string; tasks: SocialTask[] }[] = [
+export type SocialTaskGroup = {
+  platform: string;
+  /** Official brand color for the platform. */
+  color: string;
+  /** Secondary accent color (used by TikTok). */
+  accent?: string;
+  tasks: SocialTask[];
+};
+
+export const SOCIAL_TASKS: SocialTaskGroup[] = [
   {
     platform: "Telegram",
+    color: "#229ED9",
     tasks: [
       {
         id: "tg-1",
         platform: "Telegram",
         label: "Join AZOX Community",
         points: 100,
+        url: "https://t.me/AZOX_Coin",
       },
-      { id: "tg-2", platform: "Telegram", label: "Join AZOX Coin", points: 100 },
+      {
+        id: "tg-2",
+        platform: "Telegram",
+        label: "Join AZOX Coin",
+        points: 100,
+        url: "https://t.me/AZOX_Community",
+      },
     ],
   },
   {
     platform: "X (Twitter)",
+    color: "#000000",
     tasks: [
       {
         id: "x-1",
         platform: "X (Twitter)",
-        label: "Follow Azad_Bashqaly",
+        label: "Follow AZOX Coin",
         points: 150,
+        url: "https://x.com/AzoxCoin",
       },
       {
         id: "x-2",
         platform: "X (Twitter)",
-        label: "Follow AZOX Coin",
+        label: "Follow Robinhood Crypto",
         points: 150,
+        url: "https://x.com/RobinhoodCrypto",
       },
       {
         id: "x-3",
         platform: "X (Twitter)",
-        label: "Follow Solana",
-        points: 100,
+        label: "Follow Robinhood",
+        points: 150,
+        url: "https://x.com/RobinhoodApp",
       },
       {
         id: "x-4",
         platform: "X (Twitter)",
-        label: "Follow Raydium",
-        points: 100,
+        label: "Follow USDG",
+        points: 150,
+        url: "https://x.com/global_dollar",
       },
       {
         id: "x-5",
         platform: "X (Twitter)",
-        label: "Follow SOL Foundation",
-        points: 100,
+        label: "Follow OKX",
+        points: 150,
+        url: "https://x.com/okx",
       },
       {
         id: "x-6",
         platform: "X (Twitter)",
-        label: "Follow Phantom",
-        points: 100,
+        label: "Follow MetaMask",
+        points: 150,
+        url: "https://x.com/MetaMask",
       },
-      { id: "x-7", platform: "X (Twitter)", label: "Follow OKX", points: 100 },
+      {
+        id: "x-7",
+        platform: "X (Twitter)",
+        label: "Follow Trust Wallet",
+        points: 150,
+        url: "https://x.com/TrustWallet",
+      },
       {
         id: "x-8",
         platform: "X (Twitter)",
-        label: "Follow MetaMask",
-        points: 100,
-      },
-      {
-        id: "x-9",
-        platform: "X (Twitter)",
-        label: "Follow Trust Wallet",
-        points: 100,
+        label: "Follow Phantom",
+        points: 150,
+        url: "https://x.com/phantom",
       },
     ],
   },
   {
     platform: "Instagram",
+    color: "#E1306C",
     tasks: [
       {
         id: "ig-1",
         platform: "Instagram",
-        label: "Follow Azad Bashqaly",
-        points: 150,
+        label: "Follow Azad Bashqali",
+        points: 100,
+        url: "https://www.instagram.com/azadx?igsh=MXgzdnZnMGo2NmZncA==",
       },
       {
         id: "ig-2",
         platform: "Instagram",
         label: "Follow AZOX Coin",
-        points: 150,
+        points: 100,
+        url: "https://www.instagram.com/azox_coin?igsh=cm5teW91Mjc5aW15",
       },
-      { id: "ig-3", platform: "Instagram", label: "Follow Solana", points: 70 },
+      {
+        id: "ig-3",
+        platform: "Instagram",
+        label: "Follow Robinhood",
+        points: 100,
+        url: "https://www.instagram.com/robinhoodapp?igsh=cWh0ZjF4MXcwanUy",
+      },
       {
         id: "ig-4",
         platform: "Instagram",
-        label: "Follow Phantom",
+        label: "Follow OKX",
         points: 100,
+        url: "https://www.instagram.com/okx_official?igsh=MXVvZmRlZHAxcjgweg==",
       },
       {
         id: "ig-5",
         platform: "Instagram",
         label: "Follow MetaMask",
-        points: 50,
+        points: 100,
+        url: "https://www.instagram.com/metamask.io?igsh=MXRub210Z2dpMTZqdw==",
       },
       {
         id: "ig-6",
         platform: "Instagram",
         label: "Follow Trust Wallet",
-        points: 50,
+        points: 100,
+        url: "https://www.instagram.com/trustwallet?igsh=MW15bnQ3dnZ4cXp1cw==",
       },
-      { id: "ig-7", platform: "Instagram", label: "Follow OKX", points: 30 },
+      {
+        id: "ig-7",
+        platform: "Instagram",
+        label: "Follow Phantom",
+        points: 100,
+        url: "https://www.instagram.com/phantom?igsh=OWVlbThnc3ZscTIz",
+      },
     ],
   },
   {
     platform: "TikTok",
+    color: "#010101",
+    accent: "#69C9D0",
     tasks: [
       {
         id: "tt-1",
         platform: "TikTok",
-        label: "Follow Azad Bashqaly",
+        label: "Follow Azad Bashqali",
         points: 100,
+        url: "https://www.tiktok.com/@azad_x__?_r=1&_t=ZS-98qeAKjkxBU",
       },
-      { id: "tt-2", platform: "TikTok", label: "Follow AZOX Coin", points: 100 },
-      { id: "tt-3", platform: "TikTok", label: "Follow Phantom", points: 50 },
+      {
+        id: "tt-2",
+        platform: "TikTok",
+        label: "Follow AZOX Coin",
+        points: 100,
+        url: "https://www.tiktok.com/@azox.coin?_r=1&_t=ZS-98qeCvz67Ma",
+      },
+      {
+        id: "tt-3",
+        platform: "TikTok",
+        label: "Follow Phantom",
+        points: 100,
+        url: "https://www.tiktok.com/@phantom?_r=1&_t=ZS-98qeIA1Kje0",
+      },
     ],
   },
   {
     platform: "YouTube",
+    color: "#FF0000",
     tasks: [
       {
         id: "yt-1",
         platform: "YouTube",
-        label: "Subscribe Azox Coin",
+        label: "Subscribe AZOX Coin",
         points: 150,
+        url: "https://youtube.com/@azox_coin?si=LUD9OYjsvBHT_WNU",
       },
       {
         id: "yt-2",
         platform: "YouTube",
         label: "Subscribe Phantom",
-        points: 100,
+        points: 150,
+        url: "https://youtube.com/@phantom-app?si=SZZFbQBE9ZQsUOa2",
       },
       {
         id: "yt-3",
         platform: "YouTube",
         label: "Subscribe MetaMask",
-        points: 100,
+        points: 150,
+        url: "https://youtube.com/@metamask?si=3NzhdW5pfFfN5sLl",
       },
       {
         id: "yt-4",
         platform: "YouTube",
         label: "Subscribe Trust Wallet",
-        points: 100,
+        points: 150,
+        url: "https://youtube.com/@trustwallet?si=NGjaW50khjR9Gypy",
       },
       {
         id: "yt-5",
         platform: "YouTube",
-        label: "Subscribe Solana",
-        points: 100,
+        label: "Subscribe OKX",
+        points: 150,
+        url: "https://youtube.com/@theokxglobal?si=RCE3Fr3SoVyQVBNj",
       },
-      { id: "yt-6", platform: "YouTube", label: "Subscribe OKX", points: 100 },
     ],
   },
   {
     platform: "Discord",
+    color: "#5865F2",
     tasks: [
       {
         id: "dc-1",
         platform: "Discord",
         label: "Join AZOX Server",
         points: 100,
+        url: "https://discord.gg/5zCgkJJ2P",
       },
     ],
   },

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { STORAGE_KEYS, readStorage, todayKey, writeStorage } from "@/lib/points";
 import { SOCIAL_TASKS } from "@/lib/azox-data";
 
-export const DAILY_GIFT_POINTS = 50;
+export const DAILY_GIFT_POINTS = 200;
 
 type TasksState = { completed: string[]; dailyClaimedOn: string | null };
 
