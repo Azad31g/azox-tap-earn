@@ -91,14 +91,30 @@ function TaskRow({ task, color }: { task: SocialTask; color: string }) {
           <Check className="size-4" aria-hidden="true" /> Done
         </span>
       ) : status === "claimable" ? (
-        <Button
-          size="sm"
-          onClick={handleClaim}
-          className="rounded-lg bg-success font-semibold text-success-foreground hover:bg-success/90"
-        >
-          <Check className="size-4" aria-hidden="true" />
-          Claim
-        </Button>
+        needsVerification ? (
+          <Button
+            size="sm"
+            onClick={handleVerify}
+            disabled={verifying}
+            className="rounded-lg bg-[#229ED9] font-semibold text-white hover:bg-[#229ED9]/90"
+          >
+            {verifying ? (
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <ShieldCheck className="size-4" aria-hidden="true" />
+            )}
+            {verifying ? "Checking…" : "Check Membership"}
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            onClick={handleClaim}
+            className="rounded-lg bg-success font-semibold text-success-foreground hover:bg-success/90"
+          >
+            <Check className="size-4" aria-hidden="true" />
+            Claim
+          </Button>
+        )
       ) : (
         <Button
           size="sm"
