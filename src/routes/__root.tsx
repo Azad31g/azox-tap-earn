@@ -15,6 +15,7 @@ import { AzoxProvider } from "../components/azox/app-provider";
 import { TopBar } from "../components/azox/top-bar";
 import { BottomNav } from "../components/azox/bottom-nav";
 import { BoxAlertBanner } from "../components/azox/box-alert-banner";
+import { Toaster } from "../components/ui/sonner";
 
 
 function NotFoundComponent() {
@@ -145,6 +146,7 @@ function RootComponent() {
             <Outlet />
           </main>
           <BottomNav />
+          <Toaster />
         </div>
       </AzoxProvider>
     </QueryClientProvider>
