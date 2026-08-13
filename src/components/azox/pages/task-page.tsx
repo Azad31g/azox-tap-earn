@@ -9,9 +9,14 @@ import {
   MessagesSquare,
   ExternalLink,
   Check,
+  Loader2,
+  ShieldCheck,
 } from "lucide-react";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { useAzox } from "@/components/azox/app-provider";
+import { verifyTelegramMembership } from "@/lib/telegram-verify.functions";
 import {
   SOCIAL_TASKS,
   type SocialTask,
