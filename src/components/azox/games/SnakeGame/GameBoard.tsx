@@ -111,6 +111,7 @@ export function GameBoard({
               top: `${it.pos.y * cell}%`,
               width: `${cell}%`,
               height: `${cell}%`,
+              pointerEvents: "none",
             }}
           >
             <span
