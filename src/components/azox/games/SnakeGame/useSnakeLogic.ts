@@ -247,7 +247,7 @@ export function useSnakeLogic(onGameOver?: (score: number) => void) {
             growRef.current += 1;
             setEaten((e) => e + 1);
           } else if (hit.kind === "diamond") {
-            setScore((s) => s + 30);
+            setScore((s) => s + 20);
             growRef.current += 3;
             setEaten((e) => e + 1);
           } else if (hit.kind === "heart") {
