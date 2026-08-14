@@ -179,7 +179,7 @@ function AirdropSection() {
             >
               <X className="size-4" aria-hidden="true" />
             </button>
-            <div className="mb-3 text-3xl">🔗</div>
+            <Wallet className="mx-auto mb-3 size-8" style={{ color: "#FF7A18" }} aria-hidden="true" />
             <h3 className="mb-2 text-base font-bold" style={{ color: "#FF7A18" }}>
               Wallet connection coming soon!
             </h3>
