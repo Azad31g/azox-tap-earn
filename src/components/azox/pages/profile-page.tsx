@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Copy, Check, Users, Coins, Zap, Trophy } from "lucide-react";
+import { Copy, Check, Users, Coins, Zap, Trophy, Wallet, CheckCircle2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { useAzox } from "@/components/azox/app-provider";
 import { AzoxFooter } from "@/components/azox/footer";
 import { RANKS, formatPoints, nextRank as getNextRank } from "@/lib/azox-data";
+import { readStorage, writeStorage } from "@/lib/points";
 
 export function ProfilePage() {
   const { user, points, rank, completedTasks, referrals } = useAzox();
