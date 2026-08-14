@@ -248,6 +248,8 @@ export function ProfilePage() {
         </span>
       </section>
 
+      <AirdropSection />
+
       {/* Stats grid */}
       <section className="grid grid-cols-2 gap-3">
         {stats.map((s) => {
