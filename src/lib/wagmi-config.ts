@@ -1,6 +1,5 @@
-import { createConfig, http, cookieStorage, createStorage } from "wagmi";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { defineChain } from "viem";
-import { injected, walletConnect, coinbaseWallet } from "wagmi/connectors";
 
 export const robinhoodTestnet = defineChain({
   id: 46630,
@@ -18,24 +17,8 @@ export const robinhoodTestnet = defineChain({
   testnet: true,
 });
 
-const projectId =
-  (import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as string | undefined) ??
-  "b3ce19879c40d8676152b270ce496113";
-
-export const hasWalletConnect = Boolean(projectId);
-
-const connectors = [
-  injected(),
-  ...(projectId ? [walletConnect({ projectId, showQrModal: true })] : []),
-  coinbaseWallet({ appName: "AZOX Gaming Hub" }),
-];
-
-export const wagmiConfig = createConfig({
+export const wagmiConfig = getDefaultConfig({
+  appName: "AZOX Gaming Hub",
+  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
   chains: [robinhoodTestnet],
-  connectors,
-  ssr: true,
-  storage: createStorage({ storage: cookieStorage }),
-  transports: {
-    [robinhoodTestnet.id]: http("https://rpc.testnet.chain.robinhood.com"),
-  },
 });
