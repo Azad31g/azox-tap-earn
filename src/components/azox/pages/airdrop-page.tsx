@@ -1,17 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ChevronDown, Wallet, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ChevronDown, CheckCircle2 } from "lucide-react";
 import {
   useAccount,
   useBalance,
-  useConnect,
-  useConnectors,
-  useDisconnect,
   useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { formatEther } from "viem";
 import { readStorage, writeStorage } from "@/lib/points";
 import {
@@ -40,21 +38,6 @@ const STEPS = [
   { icon: "💎", text: `Pay ${FEE_LABEL} registration fee` },
   { icon: "🎁", text: "Receive AZOX tokens at airdrop" },
 ];
-
-const WALLET_ICONS: Record<string, string> = {
-  metaMask: "🦊",
-  "io.metamask": "🦊",
-  injected: "🦊",
-  walletConnect: "🔗",
-  coinbaseWalletSDK: "🔵",
-  coinbaseWallet: "🔵",
-};
-
-const WALLET_HINTS: Record<string, string> = {
-  walletConnect: "Mobile & desktop wallets",
-  coinbaseWalletSDK: "Coinbase Wallet app",
-  coinbaseWallet: "Coinbase Wallet app",
-};
 
 const FAQ = [
   {
@@ -98,27 +81,13 @@ function Confetti() {
 
 export function AirdropPage() {
   const { address, isConnected, chainId } = useAccount();
-  const connectors = useConnectors();
-  const { connect, isPending: isConnecting } = useConnect();
-  const { disconnect } = useDisconnect();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
 
-  const [modal, setModal] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [localRegistered, setLocalRegistered] = useState(false);
   const [savedAddress, setSavedAddress] = useState<string | null>(null);
   const [savedDate, setSavedDate] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTelegram, setIsTelegram] = useState(false);
-
-  useEffect(() => {
-    setIsMobile(
-      /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent) ||
-        window.innerWidth < 768,
-    );
-    setIsTelegram(Boolean((window as any).Telegram?.WebApp));
-  }, []);
 
   useEffect(() => {
     setLocalRegistered(readStorage<boolean>(KEYS.registered, false));
@@ -182,67 +151,6 @@ export function AirdropPage() {
   const hasEnoughBalance = Boolean(balance && balance.value >= REGISTRATION_FEE);
   const isRegistered = Boolean(isEligible) || localRegistered;
   const busy = isTxPending || isConfirming;
-
-  const walletOptions = useMemo(
-    () =>
-      connectors.map((c) => ({
-        connector: c,
-        name:
-          c.id === "injected" || c.id === "metaMask" || c.id === "io.metamask"
-            ? "MetaMask (injected)"
-            : c.name,
-        icon: WALLET_ICONS[c.id] ?? "👛",
-        hint: WALLET_HINTS[c.id] ?? "Browser & mobile wallets",
-      })),
-    [connectors],
-  );
-
-  const walletConnectConnector = useMemo(
-    () => connectors.find((c) => c.id === "walletConnect"),
-    [connectors],
-  );
-
-  const coinbaseConnector = useMemo(
-    () =>
-      connectors.find(
-        (c) => c.id === "coinbaseWallet" || c.id === "coinbaseWalletSDK",
-      ),
-    [connectors],
-  );
-
-  const mobileWalletOptions = useMemo(
-    () => [
-      {
-        id: "walletConnect",
-        name: "WalletConnect",
-        icon: "🔗",
-        hint: "Opens MetaMask, Trust, Phantom...",
-        connector: walletConnectConnector,
-      },
-      {
-        id: "trust",
-        name: "Trust Wallet",
-        icon: "🛡️",
-        hint: "Mobile wallet",
-        connector: walletConnectConnector,
-      },
-      {
-        id: "metamask-mobile",
-        name: "MetaMask Mobile",
-        icon: "🦊",
-        hint: "Mobile app",
-        connector: walletConnectConnector,
-      },
-      {
-        id: "coinbase",
-        name: "Coinbase Wallet",
-        icon: "🔵",
-        hint: "Mobile app",
-        connector: coinbaseConnector,
-      },
-    ],
-    [walletConnectConnector, coinbaseConnector],
-  );
 
   const handleRegister = () => {
     resetTx();
@@ -373,13 +281,9 @@ export function AirdropPage() {
             >
               Robinhood Chain Testnet
             </span>
-            <button
-              onClick={() => setModal(true)}
-              className="w-full rounded-xl py-3 text-sm font-bold text-white"
-              style={{ background: ORANGE }}
-            >
-              🔗 Connect Wallet
-            </button>
+            <div className="flex justify-center">
+              <ConnectButton />
+            </div>
             <p className="text-center text-[11px] text-muted-foreground">
               One-time registration fee: {FEE_LABEL}
             </p>
@@ -421,12 +325,7 @@ export function AirdropPage() {
                   {address ? shorten(address) : ""}
                 </code>
               </div>
-              <button
-                onClick={() => disconnect()}
-                className="rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground"
-              >
-                Disconnect
-              </button>
+              <ConnectButton showBalance={false} />
             </div>
 
             <p className="text-xs text-muted-foreground">
@@ -517,134 +416,6 @@ export function AirdropPage() {
           })}
         </ul>
       </section>
-
-      {/* Wallet selection bottom sheet */}
-      {modal && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center"
-          style={{ background: "rgba(0,0,0,0.85)" }}
-          onClick={() => setModal(false)}
-        >
-          <div
-            className="w-full max-w-md rounded-t-3xl p-5"
-            style={{
-              background: "#0d0d0d",
-              border: `1px solid ${ORANGE}`,
-              boxShadow: "0 -8px 32px rgba(255,122,24,0.25)",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="mb-3 flex items-center gap-2">
-              <Wallet
-                className="size-5"
-                style={{ color: ORANGE }}
-                aria-hidden="true"
-              />
-              <h2 className="text-base font-bold" style={{ color: ORANGE }}>
-                Connect Wallet
-              </h2>
-            </div>
-            <ul className="mb-4 flex flex-col gap-2">
-              {isTelegram ? (
-                <li>
-                  <button
-                    disabled={isConnecting || !walletConnectConnector}
-                    onClick={() => {
-                      if (!walletConnectConnector) return;
-                      connect({
-                        connector: walletConnectConnector,
-                        chainId: robinhoodTestnet.id,
-                      });
-                      setModal(false);
-                    }}
-                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-3 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
-                    style={{ touchAction: "none" }}
-                  >
-                    <span aria-hidden="true" className="text-lg">
-                      🔗
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="text-sm font-semibold">
-                        Connect Wallet (MetaMask, Trust, Phantom...)
-                      </span>
-                      <span className="text-[11px] text-muted-foreground">
-                        WalletConnect opens your wallet app
-                      </span>
-                    </span>
-                  </button>
-                </li>
-              ) : isMobile ? (
-                <>
-                  {mobileWalletOptions
-                    .filter((w) => !!w.connector)
-                    .map((w) => (
-                      <li key={w.id}>
-                        <button
-                          disabled={isConnecting}
-                          onClick={() => {
-                            connect({
-                              connector: w.connector!,
-                              chainId: robinhoodTestnet.id,
-                            });
-                            setModal(false);
-                          }}
-                          className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
-                          style={{ touchAction: "none" }}
-                        >
-                          <span aria-hidden="true" className="text-lg">
-                            {w.icon}
-                          </span>
-                          <span className="flex flex-col">
-                            <span className="text-sm font-semibold">
-                              {w.name}
-                            </span>
-                            <span className="text-[11px] text-muted-foreground">
-                              {w.hint}
-                            </span>
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                </>
-              ) : (
-                walletOptions.map((w) => (
-                  <li key={w.connector.uid}>
-                    <button
-                      disabled={isConnecting}
-                      onClick={() => {
-                        connect({
-                          connector: w.connector,
-                          chainId: robinhoodTestnet.id,
-                        });
-                        setModal(false);
-                      }}
-                      className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
-                    >
-                      <span aria-hidden="true" className="text-lg">
-                        {w.icon}
-                      </span>
-                      <span className="flex flex-col">
-                        <span className="text-sm font-semibold">
-                          {w.name}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground">
-                          {w.hint}
-                        </span>
-                      </span>
-                    </button>
-                  </li>
-                ))
-              )}
-            </ul>
-            <button
-              onClick={() => setModal(false)}
-              className="w-full rounded-xl border border-border py-2.5 text-sm font-semibold"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
