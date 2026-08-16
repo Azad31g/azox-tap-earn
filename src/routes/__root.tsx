@@ -16,6 +16,8 @@ import { TopBar } from "../components/azox/top-bar";
 import { BottomNav } from "../components/azox/bottom-nav";
 import { BoxAlertBanner } from "../components/azox/box-alert-banner";
 import { Toaster } from "../components/ui/sonner";
+import { WagmiProvider } from "wagmi";
+import { wagmiConfig } from "../lib/wagmi-config";
 
 
 function NotFoundComponent() {
@@ -136,20 +138,22 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AzoxProvider>
-        <div className="min-h-screen bg-background text-foreground">
-          <BoxAlertBanner />
-          <TopBar />
-          <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
-            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-            <Outlet />
-          </main>
-          <BottomNav />
-          <Toaster />
-        </div>
-      </AzoxProvider>
-    </QueryClientProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <AzoxProvider>
+          <div className="min-h-screen bg-background text-foreground">
+            <BoxAlertBanner />
+            <TopBar />
+            <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+            <BottomNav />
+            <Toaster />
+          </div>
+        </AzoxProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 
