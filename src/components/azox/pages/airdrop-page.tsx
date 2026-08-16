@@ -600,8 +600,7 @@ export function AirdropPage() {
                           </span>
                         </button>
                       </li>
-                    ) : null,
-                  )}
+                    ))}
                 </>
               ) : (
                 walletOptions.map((w) => (
