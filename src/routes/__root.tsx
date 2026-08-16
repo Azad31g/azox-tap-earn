@@ -16,6 +16,8 @@ import { TopBar } from "../components/azox/top-bar";
 import { BottomNav } from "../components/azox/bottom-nav";
 import { BoxAlertBanner } from "../components/azox/box-alert-banner";
 import { Toaster } from "../components/ui/sonner";
+import { WagmiProvider } from "wagmi";
+import { wagmiConfig } from "../lib/wagmi-config";
 
 
 function NotFoundComponent() {
