@@ -18,9 +18,9 @@ export const robinhoodTestnet = defineChain({
   testnet: true,
 });
 
-const projectId = import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as
-  | string
-  | undefined;
+const projectId =
+  (import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as string | undefined) ??
+  "b3ce19879c40d8676152b270ce496113";
 
 export const hasWalletConnect = Boolean(projectId);
 
