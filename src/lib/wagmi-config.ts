@@ -19,6 +19,6 @@ export const robinhoodTestnet = defineChain({
 
 export const wagmiConfig = getDefaultConfig({
   appName: "AZOX Gaming Hub",
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID,
+  projectId: import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"],
   chains: [robinhoodTestnet],
 });
