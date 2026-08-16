@@ -113,6 +113,10 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: appCss,
       },
+      {
+        rel: "stylesheet",
+        href: "https://unpkg.com/@rainbow-me/rainbowkit@2/dist/index.css",
+      },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
