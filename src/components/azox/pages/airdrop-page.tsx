@@ -1,20 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, ChevronDown, Wallet, CheckCircle2 } from "lucide-react";
+import {
+  useAccount,
+  useBalance,
+  useConnect,
+  useConnectors,
+  useDisconnect,
+  useReadContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { formatEther } from "viem";
 import { readStorage, writeStorage } from "@/lib/points";
+import {
+  AZOX_AIRDROP_ABI,
+  AZOX_AIRDROP_ADDRESS,
+  REGISTRATION_FEE,
+} from "@/lib/contracts";
+import { robinhoodTestnet } from "@/lib/wagmi-config";
 
 const KEYS = {
   address: "azox_wallet_address",
   registered: "azox_airdrop_registered",
   date: "azox_airdrop_date",
-  balance: "azox_wallet_balance",
 };
 
-const MOCK_ADDRESS = "0x742d35Cc1C9aF5d3E3eF3a8";
-const MOCK_BALANCE = 0.0021;
-const FEE = 0.001;
 const ORANGE = "#FF7A18";
 const GREEN = "#a3e635";
+const FEE_LABEL = `${formatEther(REGISTRATION_FEE)} ETH`;
 
 function shorten(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -22,30 +37,37 @@ function shorten(addr: string) {
 
 const STEPS = [
   { icon: "🔗", text: "Connect your wallet" },
-  { icon: "✅", text: "Confirm registration" },
-  { icon: "🎁", text: "Receive AZOX tokens" },
+  { icon: "💎", text: `Pay ${FEE_LABEL} registration fee` },
+  { icon: "🎁", text: "Receive AZOX tokens at airdrop" },
 ];
 
-const WALLETS = ["MetaMask", "WalletConnect", "Trust Wallet", "Phantom"];
 const WALLET_ICONS: Record<string, string> = {
-  MetaMask: "🦊",
-  WalletConnect: "🔵",
-  "Trust Wallet": "🛡️",
-  Phantom: "👻",
+  metaMask: "🦊",
+  "io.metamask": "🦊",
+  injected: "🦊",
+  walletConnect: "🔗",
+  coinbaseWalletSDK: "🔵",
+  coinbaseWallet: "🔵",
+};
+
+const WALLET_HINTS: Record<string, string> = {
+  walletConnect: "Mobile & desktop wallets",
+  coinbaseWalletSDK: "Coinbase Wallet app",
+  coinbaseWallet: "Coinbase Wallet app",
 };
 
 const FAQ = [
   {
     q: "What is the AZOX Airdrop?",
-    a: "AZOX token distribution to early community members on Robinhood Chain.",
+    a: "AZOX token distribution to early community members on Robinhood Chain Testnet.",
   },
   {
     q: "Why is a fee required?",
-    a: "The 0.001 ETH fee confirms wallet ownership and prevents bot registrations.",
+    a: `The ${FEE_LABEL} fee confirms wallet ownership and prevents bot registrations.`,
   },
   {
-    q: "When will tokens be distributed?",
-    a: "Distribution date will be announced in our official channels.",
+    q: "Which network do I need?",
+    a: `Robinhood Chain Testnet (Chain ID ${robinhoodTestnet.id}).`,
   },
   {
     q: "How many tokens will I receive?",
@@ -75,54 +97,104 @@ function Confetti() {
 }
 
 export function AirdropPage() {
-  const [address, setAddress] = useState<string | null>(null);
-  const [registered, setRegistered] = useState(false);
-  const [date, setDate] = useState<string | null>(null);
-  const [balance, setBalance] = useState(0);
+  const { address, isConnected, chainId } = useAccount();
+  const connectors = useConnectors();
+  const { connect, isPending: isConnecting } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { switchChain, isPending: isSwitching } = useSwitchChain();
+
   const [modal, setModal] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [localRegistered, setLocalRegistered] = useState(false);
+  const [savedAddress, setSavedAddress] = useState<string | null>(null);
+  const [savedDate, setSavedDate] = useState<string | null>(null);
 
   useEffect(() => {
-    setAddress(readStorage<string | null>(KEYS.address, null));
-    setRegistered(readStorage<boolean>(KEYS.registered, false));
-    setDate(readStorage<string | null>(KEYS.date, null));
-    setBalance(readStorage<number>(KEYS.balance, 0));
+    setLocalRegistered(readStorage<boolean>(KEYS.registered, false));
+    setSavedAddress(readStorage<string | null>(KEYS.address, null));
+    setSavedDate(readStorage<string | null>(KEYS.date, null));
   }, []);
 
-  const connect = () => {
-    setModal(true);
-    writeStorage(KEYS.address, MOCK_ADDRESS);
-    writeStorage(KEYS.balance, MOCK_BALANCE);
-    setAddress(MOCK_ADDRESS);
-    setBalance(MOCK_BALANCE);
-  };
+  const { data: balance } = useBalance({
+    address,
+    chainId: robinhoodTestnet.id,
+    query: { enabled: Boolean(address) },
+  });
 
-  const register = () => {
-    if (balance < FEE) return;
+  const { data: isEligible, refetch: refetchEligible } = useReadContract({
+    address: AZOX_AIRDROP_ADDRESS,
+    abi: AZOX_AIRDROP_ABI,
+    functionName: "isEligible",
+    args: address ? [address] : undefined,
+    chainId: robinhoodTestnet.id,
+    query: { enabled: Boolean(address) },
+  });
+
+  const { data: totalRegistered } = useReadContract({
+    address: AZOX_AIRDROP_ADDRESS,
+    abi: AZOX_AIRDROP_ABI,
+    functionName: "totalRegistered",
+    chainId: robinhoodTestnet.id,
+  });
+
+  const {
+    writeContract,
+    data: txHash,
+    isPending: isTxPending,
+    error: txError,
+    reset: resetTx,
+  } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({ hash: txHash });
+
+  useEffect(() => {
+    if (!isConfirmed) return;
     const today = new Date().toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
     writeStorage(KEYS.registered, true);
+    writeStorage(KEYS.address, address ?? "");
     writeStorage(KEYS.date, today);
-    setRegistered(true);
-    setDate(today);
+    setLocalRegistered(true);
+    setSavedAddress(address ?? null);
+    setSavedDate(today);
     setConfetti(true);
-    window.setTimeout(() => setConfetti(false), 2200);
+    void refetchEligible();
+    const t = window.setTimeout(() => setConfetti(false), 2200);
+    return () => window.clearTimeout(t);
+  }, [isConfirmed, address, refetchEligible]);
+
+  const isWrongNetwork = isConnected && chainId !== robinhoodTestnet.id;
+  const hasEnoughBalance = Boolean(balance && balance.value >= REGISTRATION_FEE);
+  const isRegistered = Boolean(isEligible) || localRegistered;
+  const busy = isTxPending || isConfirming;
+
+  const walletOptions = useMemo(
+    () =>
+      connectors.map((c) => ({
+        connector: c,
+        icon: WALLET_ICONS[c.id] ?? "👛",
+        hint: WALLET_HINTS[c.id] ?? "Browser & mobile wallets",
+      })),
+    [connectors],
+  );
+
+  const handleRegister = () => {
+    resetTx();
+    writeContract({
+      address: AZOX_AIRDROP_ADDRESS,
+      abi: AZOX_AIRDROP_ABI,
+      functionName: "register",
+      value: REGISTRATION_FEE,
+      chainId: robinhoodTestnet.id,
+    });
   };
 
-  const testRegistration = () => {
-    writeStorage(KEYS.address, MOCK_ADDRESS);
-    writeStorage(KEYS.balance, MOCK_BALANCE);
-    setAddress(MOCK_ADDRESS);
-    setBalance(MOCK_BALANCE);
-    register();
-  };
-
-  const isConnected = Boolean(address);
-  const hasBalance = balance >= FEE;
+  const displayAddress = address ?? savedAddress;
 
   return (
     <div className="flex flex-col gap-5 pb-8">
@@ -147,7 +219,8 @@ export function AirdropPage() {
         style={{
           background: "#0d0d0d",
           border: `1px solid ${ORANGE}`,
-          boxShadow: "0 0 0 1px rgba(255,122,24,0.25), 0 10px 32px rgba(255,122,24,0.2)",
+          boxShadow:
+            "0 0 0 1px rgba(255,122,24,0.25), 0 10px 32px rgba(255,122,24,0.2)",
         }}
       >
         <div style={{ fontSize: 64, lineHeight: 1 }}>🪂</div>
@@ -155,8 +228,14 @@ export function AirdropPage() {
           AZOX Airdrop Registration
         </h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Register once to qualify for AZOX token distribution
+          Register once to qualify for AZOX token distribution on Robinhood Chain
+          Testnet (Chain ID {robinhoodTestnet.id})
         </p>
+        {totalRegistered !== undefined && (
+          <p className="mt-2 text-xs font-semibold" style={{ color: GREEN }}>
+            {totalRegistered.toString()} registered so far
+          </p>
+        )}
         <div
           className="mx-auto mt-4 h-0.5 w-20 rounded-full"
           style={{ background: ORANGE }}
@@ -183,60 +262,121 @@ export function AirdropPage() {
         </ul>
       </section>
 
-      {/* Wallet card */}
+      {/* Main action card */}
       <section
         className="relative rounded-2xl p-5"
         style={{
           background: "#0d0d0d",
-          border: `1px solid ${registered ? GREEN : ORANGE}`,
-          boxShadow: registered
+          border: `1px solid ${isRegistered ? GREEN : ORANGE}`,
+          boxShadow: isRegistered
             ? "0 8px 24px rgba(163,230,53,0.18)"
             : "0 8px 24px rgba(255,122,24,0.18)",
         }}
       >
         {confetti && <Confetti />}
 
-        {!isConnected && (
+        {isRegistered && (
+          <div className="space-y-2 text-center">
+            <div style={{ fontSize: 48, lineHeight: 1 }}>✅</div>
+            <h2 className="text-base font-bold" style={{ color: GREEN }}>
+              Airdrop Eligible!
+            </h2>
+            {displayAddress && (
+              <p className="text-xs text-muted-foreground">
+                Wallet:{" "}
+                <code className="text-foreground">{shorten(displayAddress)}</code>
+              </p>
+            )}
+            {savedDate && (
+              <p className="text-xs text-muted-foreground">
+                Registered on: {savedDate}
+              </p>
+            )}
+            <p className="text-xs" style={{ color: GREEN }}>
+              Registration confirmed on Robinhood Chain ✓
+            </p>
+          </div>
+        )}
+
+        {!isConnected && !isRegistered && (
           <div className="space-y-3">
             <h2 className="text-base font-bold" style={{ color: ORANGE }}>
               Connect Your Wallet
             </h2>
             <p className="text-xs text-muted-foreground">
-              Supported: MetaMask, WalletConnect, Trust Wallet
+              Supports MetaMask, Trust Wallet, Phantom, Coinbase & more
             </p>
             <span
               className="inline-block rounded-full border px-2.5 py-1 text-[11px] font-semibold"
               style={{ color: ORANGE, borderColor: ORANGE }}
             >
-              Robinhood Chain
+              Robinhood Chain Testnet
             </span>
             <button
-              onClick={connect}
+              onClick={() => setModal(true)}
               className="w-full rounded-xl py-3 text-sm font-bold text-white"
               style={{ background: ORANGE }}
             >
               🔗 Connect Wallet
             </button>
             <p className="text-center text-[11px] text-muted-foreground">
-              One-time registration required
+              One-time registration fee: {FEE_LABEL}
             </p>
           </div>
         )}
 
-        {isConnected && !registered && (
+        {isConnected && isWrongNetwork && !isRegistered && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-4" style={{ color: GREEN }} aria-hidden="true" />
-              <h2 className="text-sm font-bold">Wallet Connected</h2>
+            <h2 className="text-sm font-bold" style={{ color: ORANGE }}>
+              ⚠️ Wrong network detected
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              Switch to Robinhood Chain Testnet to continue
+            </p>
+            <button
+              onClick={() => switchChain({ chainId: robinhoodTestnet.id })}
+              disabled={isSwitching}
+              className="w-full rounded-xl py-3 text-sm font-bold text-white disabled:opacity-60"
+              style={{ background: ORANGE }}
+            >
+              {isSwitching ? "Switching…" : "Switch to Robinhood Testnet"}
+            </button>
+          </div>
+        )}
+
+        {isConnected && !isWrongNetwork && !isRegistered && (
+          <div className="space-y-3">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2
+                    className="size-4"
+                    style={{ color: GREEN }}
+                    aria-hidden="true"
+                  />
+                  <h2 className="text-sm font-bold">Wallet Connected</h2>
+                </div>
+                <code className="mt-1 block text-xs text-foreground">
+                  {address ? shorten(address) : ""}
+                </code>
+              </div>
+              <button
+                onClick={() => disconnect()}
+                className="rounded-lg border border-border px-2.5 py-1 text-[11px] text-muted-foreground"
+              >
+                Disconnect
+              </button>
             </div>
-            <code className="block text-xs text-foreground">{shorten(address!)}</code>
+
             <p className="text-xs text-muted-foreground">
               Balance:{" "}
               <span className="font-semibold text-foreground">
-                {balance.toFixed(4)} ETH
+                {balance
+                  ? `${parseFloat(balance.formatted).toFixed(4)} ETH`
+                  : "Loading…"}
               </span>
             </p>
-            {hasBalance ? (
+            {hasEnoughBalance ? (
               <p className="text-xs font-semibold" style={{ color: GREEN }}>
                 ✓ Sufficient balance
               </p>
@@ -245,32 +385,41 @@ export function AirdropPage() {
                 ⚠ Insufficient balance
               </p>
             )}
+
             <button
-              onClick={register}
-              disabled={!hasBalance}
+              onClick={handleRegister}
+              disabled={!hasEnoughBalance || busy}
               className="w-full rounded-xl py-3 text-sm font-bold text-white disabled:cursor-not-allowed"
-              style={{ background: hasBalance ? ORANGE : "#555555" }}
+              style={{
+                background: hasEnoughBalance && !busy ? ORANGE : "#555555",
+              }}
             >
-              Register Now
+              {busy
+                ? isConfirming
+                  ? "⏳ Confirming on chain…"
+                  : "⏳ Confirm in your wallet…"
+                : hasEnoughBalance
+                  ? `Register Now — ${FEE_LABEL}`
+                  : "Insufficient Balance"}
             </button>
             <p className="text-center text-[11px] text-muted-foreground">
-              {hasBalance
-                ? "0.001 ETH • One-time fee"
-                : "You need at least 0.001 ETH"}
+              {FEE_LABEL} • One-time fee
             </p>
-          </div>
-        )}
 
-        {registered && (
-          <div className="space-y-2 text-center">
-            <div style={{ fontSize: 48, lineHeight: 1 }}>✅</div>
-            <h2 className="text-base font-bold" style={{ color: GREEN }}>
-              You are Airdrop Eligible!
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Wallet: <code className="text-foreground">{shorten(address ?? MOCK_ADDRESS)}</code>
-            </p>
-            <p className="text-xs text-muted-foreground">Registered on: {date}</p>
+            {txError && (
+              <div className="space-y-1 text-center">
+                <p className="text-[11px]" style={{ color: "#ef4444" }}>
+                  ❌ {txError.message.slice(0, 140)}
+                </p>
+                <button
+                  onClick={() => resetTx()}
+                  className="text-[11px] underline"
+                  style={{ color: ORANGE }}
+                >
+                  Try again
+                </button>
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -298,7 +447,9 @@ export function AirdropPage() {
                   />
                 </button>
                 {open && (
-                  <p className="px-3 pb-3 text-xs text-muted-foreground">{item.a}</p>
+                  <p className="px-3 pb-3 text-xs text-muted-foreground">
+                    {item.a}
+                  </p>
                 )}
               </li>
             );
@@ -306,16 +457,7 @@ export function AirdropPage() {
         </ul>
       </section>
 
-      {/* Hidden test helper */}
-      <button
-        onClick={testRegistration}
-        className="mx-auto text-[10px] text-transparent select-none"
-        aria-label="Test registration"
-      >
-        Test Registration
-      </button>
-
-      {/* Bottom sheet modal */}
+      {/* Wallet selection bottom sheet */}
       {modal && (
         <div
           className="fixed inset-0 z-50 flex items-end justify-center"
@@ -332,30 +474,41 @@ export function AirdropPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-center gap-2">
-              <Wallet className="size-5" style={{ color: ORANGE }} aria-hidden="true" />
+              <Wallet
+                className="size-5"
+                style={{ color: ORANGE }}
+                aria-hidden="true"
+              />
               <h2 className="text-base font-bold" style={{ color: ORANGE }}>
                 Connect Wallet
               </h2>
             </div>
-            <p className="mb-4 text-xs text-muted-foreground">
-              Wallet connection with smart contract is being finalized. Coming very
-              soon!
-            </p>
             <ul className="mb-4 flex flex-col gap-2">
-              {WALLETS.map((w) => (
-                <li
-                  key={w}
-                  className="flex items-center justify-between rounded-xl border border-border bg-secondary/40 px-3 py-2.5 transition-colors hover:bg-secondary/70"
-                >
-                  <span className="flex items-center gap-2 text-sm font-semibold">
-                    <span aria-hidden="true">{WALLET_ICONS[w]}</span> {w}
-                  </span>
-                  <span
-                    className="rounded-full border px-2 py-0.5 text-[10px] font-semibold"
-                    style={{ color: ORANGE, borderColor: ORANGE }}
+              {walletOptions.map((w) => (
+                <li key={w.connector.uid}>
+                  <button
+                    disabled={isConnecting}
+                    onClick={() => {
+                      connect({
+                        connector: w.connector,
+                        chainId: robinhoodTestnet.id,
+                      });
+                      setModal(false);
+                    }}
+                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
                   >
-                    Coming soon
-                  </span>
+                    <span aria-hidden="true" className="text-lg">
+                      {w.icon}
+                    </span>
+                    <span className="flex flex-col">
+                      <span className="text-sm font-semibold">
+                        {w.connector.name}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground">
+                        {w.hint}
+                      </span>
+                    </span>
+                  </button>
                 </li>
               ))}
             </ul>
