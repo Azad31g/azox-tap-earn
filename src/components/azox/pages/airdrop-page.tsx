@@ -541,33 +541,96 @@ export function AirdropPage() {
               </h2>
             </div>
             <ul className="mb-4 flex flex-col gap-2">
-              {walletOptions.map((w) => (
-                <li key={w.connector.uid}>
+              {isTelegram ? (
+                <li>
                   <button
-                    disabled={isConnecting}
+                    disabled={isConnecting || !walletConnectConnector}
                     onClick={() => {
+                      if (!walletConnectConnector) return;
                       connect({
-                        connector: w.connector,
+                        connector: walletConnectConnector,
                         chainId: robinhoodTestnet.id,
                       });
                       setModal(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
+                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-3 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
+                    style={{ touchAction: "none" }}
                   >
                     <span aria-hidden="true" className="text-lg">
-                      {w.icon}
+                      🔗
                     </span>
                     <span className="flex flex-col">
                       <span className="text-sm font-semibold">
-                        {w.connector.name}
+                        Connect Wallet (MetaMask, Trust, Phantom...)
                       </span>
                       <span className="text-[11px] text-muted-foreground">
-                        {w.hint}
+                        WalletConnect opens your wallet app
                       </span>
                     </span>
                   </button>
                 </li>
-              ))}
+              ) : isMobile ? (
+                <>
+                  {mobileWalletOptions.map((w) =>
+                    w.connector ? (
+                      <li key={w.id}>
+                        <button
+                          disabled={isConnecting}
+                          onClick={() => {
+                            connect({
+                              connector: w.connector,
+                              chainId: robinhoodTestnet.id,
+                            });
+                            setModal(false);
+                          }}
+                          className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
+                          style={{ touchAction: "none" }}
+                        >
+                          <span aria-hidden="true" className="text-lg">
+                            {w.icon}
+                          </span>
+                          <span className="flex flex-col">
+                            <span className="text-sm font-semibold">
+                              {w.name}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground">
+                              {w.hint}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    ) : null,
+                  )}
+                </>
+              ) : (
+                walletOptions.map((w) => (
+                  <li key={w.connector.uid}>
+                    <button
+                      disabled={isConnecting}
+                      onClick={() => {
+                        connect({
+                          connector: w.connector,
+                          chainId: robinhoodTestnet.id,
+                        });
+                        setModal(false);
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/40 px-3 py-2.5 text-left transition-colors hover:bg-secondary/70 disabled:opacity-60"
+                    >
+                      <span aria-hidden="true" className="text-lg">
+                        {w.icon}
+                      </span>
+                      <span className="flex flex-col">
+                        <span className="text-sm font-semibold">
+                          {w.connector.name}
+                        </span>
+                        <span className="text-[11px] text-muted-foreground">
+                          {w.hint}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                ))
+              )}
             </ul>
             <button
               onClick={() => setModal(false)}
