@@ -625,7 +625,7 @@ export function AirdropPage() {
                       </span>
                       <span className="flex flex-col">
                         <span className="text-sm font-semibold">
-                          {w.connector.name}
+                          {w.name}
                         </span>
                         <span className="text-[11px] text-muted-foreground">
                           {w.hint}
