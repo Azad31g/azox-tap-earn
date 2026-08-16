@@ -571,8 +571,9 @@ export function AirdropPage() {
                 </li>
               ) : isMobile ? (
                 <>
-                  {mobileWalletOptions.map((w) =>
-                    w.connector ? (
+                  {mobileWalletOptions
+                    .filter((w) => !!w.connector)
+                    .map((w) => (
                       <li key={w.id}>
                         <button
                           disabled={isConnecting}
