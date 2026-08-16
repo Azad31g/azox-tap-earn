@@ -109,6 +109,16 @@ export function AirdropPage() {
   const [localRegistered, setLocalRegistered] = useState(false);
   const [savedAddress, setSavedAddress] = useState<string | null>(null);
   const [savedDate, setSavedDate] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTelegram, setIsTelegram] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(
+      /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent) ||
+        window.innerWidth < 768,
+    );
+    setIsTelegram(Boolean((window as any).Telegram?.WebApp));
+  }, []);
 
   useEffect(() => {
     setLocalRegistered(readStorage<boolean>(KEYS.registered, false));
