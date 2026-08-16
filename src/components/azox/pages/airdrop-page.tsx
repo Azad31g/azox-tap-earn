@@ -187,6 +187,10 @@ export function AirdropPage() {
     () =>
       connectors.map((c) => ({
         connector: c,
+        name:
+          c.id === "injected" || c.id === "metaMask" || c.id === "io.metamask"
+            ? "MetaMask (injected)"
+            : c.name,
         icon: WALLET_ICONS[c.id] ?? "👛",
         hint: WALLET_HINTS[c.id] ?? "Browser & mobile wallets",
       })),
