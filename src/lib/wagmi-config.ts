@@ -17,10 +17,14 @@ export const robinhoodTestnet = defineChain({
   testnet: true,
 });
 
-const projectId = import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as string | undefined;
-if (!projectId) {
-  throw new Error("VITE_WALLETCONNECT_PROJECT_ID is required");
-}
+// WalletConnect Project IDs are publishable client identifiers (not secrets),
+// so a hardcoded default keeps the app booting even without an env override.
+const DEFAULT_WALLETCONNECT_PROJECT_ID = "b3ce19879c40d8676152b270ce496113";
+
+const projectId =
+  (import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as string | undefined) ||
+  DEFAULT_WALLETCONNECT_PROJECT_ID;
+
 
 export const wagmiConfig = getDefaultConfig({
   appName: "AZOX Gaming Hub",
