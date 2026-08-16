@@ -372,7 +372,7 @@ export function AirdropPage() {
               Balance:{" "}
               <span className="font-semibold text-foreground">
                 {balance
-                  ? `${parseFloat(balance.formatted).toFixed(4)} ETH`
+                  ? `${parseFloat(formatEther(balance.value)).toFixed(4)} ETH`
                   : "Loading…"}
               </span>
             </p>
