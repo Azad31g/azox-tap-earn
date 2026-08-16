@@ -579,7 +579,7 @@ export function AirdropPage() {
                           disabled={isConnecting}
                           onClick={() => {
                             connect({
-                              connector: w.connector,
+                              connector: w.connector!,
                               chainId: robinhoodTestnet.id,
                             });
                             setModal(false);
