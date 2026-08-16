@@ -193,6 +193,53 @@ export function AirdropPage() {
     [connectors],
   );
 
+  const walletConnectConnector = useMemo(
+    () => connectors.find((c) => c.id === "walletConnect"),
+    [connectors],
+  );
+
+  const coinbaseConnector = useMemo(
+    () =>
+      connectors.find(
+        (c) => c.id === "coinbaseWallet" || c.id === "coinbaseWalletSDK",
+      ),
+    [connectors],
+  );
+
+  const mobileWalletOptions = useMemo(
+    () => [
+      {
+        id: "walletConnect",
+        name: "WalletConnect",
+        icon: "🔗",
+        hint: "Opens MetaMask, Trust, Phantom...",
+        connector: walletConnectConnector,
+      },
+      {
+        id: "trust",
+        name: "Trust Wallet",
+        icon: "🛡️",
+        hint: "Mobile wallet",
+        connector: walletConnectConnector,
+      },
+      {
+        id: "metamask-mobile",
+        name: "MetaMask Mobile",
+        icon: "🦊",
+        hint: "Mobile app",
+        connector: walletConnectConnector,
+      },
+      {
+        id: "coinbase",
+        name: "Coinbase Wallet",
+        icon: "🔵",
+        hint: "Mobile app",
+        connector: coinbaseConnector,
+      },
+    ],
+    [walletConnectConnector, coinbaseConnector],
+  );
+
   const handleRegister = () => {
     resetTx();
     writeContract({
