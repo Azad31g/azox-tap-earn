@@ -22,31 +22,36 @@ import { wagmiAdapter } from "../lib/wagmi-config";
 
 const queryClient = new QueryClient();
 
-function AppKitInitializer({ children }: { children: ReactNode }) {
+function AppKitInit() {
   useEffect(() => {
-    import("@reown/appkit/react").then(({ createAppKit }) => {
-      import("../lib/wagmi-config").then(({ wagmiAdapter, networks, projectId }) => {
-        try {
-          createAppKit({
-            adapters: [wagmiAdapter as never],
-            networks,
-            projectId,
-            metadata: {
-              name: "AZOX Gateway",
-              description: "AZOX Gaming Hub",
-              url: "https://azox-tap-earn.lovable.app",
-              icons: ["/favicon.png"],
-            },
-            features: { analytics: false },
-          });
-        } catch {
-          // already initialized
-        }
+    let initialized = false;
+    if (!initialized) {
+      initialized = true;
+      import("@reown/appkit/react").then(({ createAppKit }) => {
+        import("../lib/wagmi-config").then(
+          ({ wagmiAdapter, networks, projectId }) => {
+            try {
+              createAppKit({
+                adapters: [wagmiAdapter as never],
+                networks,
+                projectId,
+                metadata: {
+                  name: "AZOX Gateway",
+                  description: "AZOX Gaming Hub",
+                  url: "https://azox-tap-earn.lovable.app",
+                  icons: ["/favicon.png"],
+                },
+                features: { analytics: false },
+              });
+            } catch {
+              // AppKit already initialized
+            }
+          }
+        );
       });
-    });
+    }
   }, []);
-
-  return <>{children}</>;
+  return null;
 }
 
 
@@ -168,20 +173,19 @@ function RootComponent() {
   return (
     <WagmiProvider config={wagmiAdapter.wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <AppKitInitializer>
-          <AzoxProvider>
-            <div className="min-h-screen bg-background text-foreground">
-              <BoxAlertBanner />
-              <TopBar />
-              <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
-                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-                <Outlet />
-              </main>
-              <BottomNav />
-              <Toaster />
-            </div>
-          </AzoxProvider>
-        </AppKitInitializer>
+        <AzoxProvider>
+          <div className="min-h-screen bg-background text-foreground">
+            <AppKitInit />
+            <BoxAlertBanner />
+            <TopBar />
+            <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </main>
+            <BottomNav />
+            <Toaster />
+          </div>
+        </AzoxProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
