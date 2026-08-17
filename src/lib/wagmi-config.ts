@@ -19,7 +19,7 @@ export const robinhoodTestnet = defineChain({
 
 // WalletConnect Project IDs are publishable client identifiers (not secrets),
 // so a hardcoded default keeps the app booting even without an env override.
-const DEFAULT_WALLETCONNECT_PROJECT_ID = "b3ce19879c40d8676152b270ce496113";
+const DEFAULT_WALLETCONNECT_PROJECT_ID = "be9bcbf74fc2ea216bd558ee88a70feb";
 
 const projectId =
   (import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as string | undefined) ||
