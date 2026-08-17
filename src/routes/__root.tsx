@@ -28,7 +28,7 @@ import {
 const queryClient = new QueryClient();
 
 createAppKit({
-  adapters: [wagmiAdapter],
+  adapters: [wagmiAdapter as never],
   networks,
   projectId,
   metadata: {

@@ -1,5 +1,6 @@
 import { defineChain } from "viem";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import type { AppKitNetwork } from "@reown/appkit/networks";
 
 export const robinhoodTestnet = defineChain({
   id: 46630,
@@ -20,7 +21,9 @@ export const robinhoodTestnet = defineChain({
 // WalletConnect / Reown Project IDs are publishable client identifiers.
 export const projectId = "be9bcbf74fc2ea216bd558ee88a70feb";
 
-export const networks = [robinhoodTestnet];
+export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
+  robinhoodTestnet,
+];
 
 export const wagmiAdapter = new WagmiAdapter({
   networks,
