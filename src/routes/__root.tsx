@@ -166,21 +166,23 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   return (
-    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
-      <QueryClientProvider client={queryClient}>
-          <AzoxProvider>
-            <div className="min-h-screen bg-background text-foreground">
-              <BoxAlertBanner />
-              <TopBar />
-              <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
-                {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-                <Outlet />
-              </main>
-              <BottomNav />
-              <Toaster />
-            </div>
-          </AzoxProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <AppKitInitializer>
+      <WagmiProvider config={wagmiAdapter.wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+            <AzoxProvider>
+              <div className="min-h-screen bg-background text-foreground">
+                <BoxAlertBanner />
+                <TopBar />
+                <main className="mx-auto w-full max-w-md px-4 pb-28 pt-4">
+                  {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+                  <Outlet />
+                </main>
+                <BottomNav />
+                <Toaster />
+              </div>
+            </AzoxProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </AppKitInitializer>
   );
 }
