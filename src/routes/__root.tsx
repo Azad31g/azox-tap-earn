@@ -18,6 +18,7 @@ import { BottomNav } from "../components/azox/bottom-nav";
 import { BoxAlertBanner } from "../components/azox/box-alert-banner";
 import { Toaster } from "../components/ui/sonner";
 import { WagmiProvider } from "wagmi";
+import { wagmiAdapter } from "../lib/wagmi-config";
 
 const queryClient = new QueryClient();
 
