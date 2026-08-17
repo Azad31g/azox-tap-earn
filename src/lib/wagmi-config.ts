@@ -30,5 +30,5 @@ export const wagmiConfig = getDefaultConfig({
   appName: "AZOX Gaming Hub",
   projectId,
   chains: [robinhoodTestnet],
-  ssr: false,
+  ssr: true,
 });
