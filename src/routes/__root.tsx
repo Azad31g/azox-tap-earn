@@ -8,7 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -18,29 +18,36 @@ import { BottomNav } from "../components/azox/bottom-nav";
 import { BoxAlertBanner } from "../components/azox/box-alert-banner";
 import { Toaster } from "../components/ui/sonner";
 import { WagmiProvider } from "wagmi";
-import { createAppKit } from "@reown/appkit/react";
-import {
-  wagmiAdapter,
-  networks,
-  projectId,
-} from "../lib/wagmi-config";
 
 const queryClient = new QueryClient();
 
-createAppKit({
-  adapters: [wagmiAdapter as never],
-  networks,
-  projectId,
-  metadata: {
-    name: "AZOX Gateway",
-    description: "AZOX Gaming Hub",
-    url: "https://azox-tap-earn.lovable.app",
-    icons: ["/favicon.png"],
-  },
-  features: {
-    analytics: false,
-  },
-});
+function AppKitInitializer({ children }: { children: ReactNode }) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    import("@reown/appkit/react").then(({ createAppKit }) => {
+      import("../lib/wagmi-config").then(({ wagmiAdapter, networks, projectId }) => {
+        createAppKit({
+          adapters: [wagmiAdapter as never],
+          networks,
+          projectId,
+          metadata: {
+            name: "AZOX Gateway",
+            description: "AZOX Gaming Hub",
+            url: "https://azox-tap-earn.lovable.app",
+            icons: ["/favicon.png"],
+          },
+          features: { analytics: false },
+        });
+        setReady(true);
+      });
+    });
+  }, []);
+
+  if (!ready) return null;
+  return <>{children}</>;
+}
+
 
 function NotFoundComponent() {
   return (
