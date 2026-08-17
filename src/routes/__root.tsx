@@ -18,10 +18,29 @@ import { BottomNav } from "../components/azox/bottom-nav";
 import { BoxAlertBanner } from "../components/azox/box-alert-banner";
 import { Toaster } from "../components/ui/sonner";
 import { WagmiProvider } from "wagmi";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { wagmiConfig } from "../lib/wagmi-config";
+import { createAppKit } from "@reown/appkit/react";
+import {
+  wagmiAdapter,
+  networks,
+  projectId,
+} from "../lib/wagmi-config";
 
 const queryClient = new QueryClient();
+
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks,
+  projectId,
+  metadata: {
+    name: "AZOX Gateway",
+    description: "AZOX Gaming Hub",
+    url: "https://azox-tap-earn.lovable.app",
+    icons: ["/favicon.png"],
+  },
+  features: {
+    analytics: false,
+  },
+});
 
 function NotFoundComponent() {
   return (
@@ -113,10 +132,6 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: appCss,
       },
-      {
-        rel: "stylesheet",
-        href: "https://unpkg.com/@rainbow-me/rainbowkit@2/dist/index.css",
-      },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
@@ -143,9 +158,8 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   return (
-    <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
+    <WagmiProvider config={wagmiAdapter.wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
           <AzoxProvider>
             <div className="min-h-screen bg-background text-foreground">
               <BoxAlertBanner />
@@ -158,7 +172,6 @@ function RootComponent() {
               <Toaster />
             </div>
           </AzoxProvider>
-        </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

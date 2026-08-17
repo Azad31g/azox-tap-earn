@@ -9,7 +9,7 @@ import {
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { AppKitButton } from "@reown/appkit/react";
 import { formatEther } from "viem";
 import { readStorage, writeStorage } from "@/lib/points";
 import {
@@ -282,7 +282,7 @@ export function AirdropPage() {
               Robinhood Chain Testnet
             </span>
             <div className="flex justify-center">
-              <ConnectButton />
+              <AppKitButton />
             </div>
             <p className="text-center text-[11px] text-muted-foreground">
               One-time registration fee: {FEE_LABEL}
@@ -325,7 +325,7 @@ export function AirdropPage() {
                   {address ? shorten(address) : ""}
                 </code>
               </div>
-              <ConnectButton showBalance={false} />
+              <AppKitButton balance="hide" />
             </div>
 
             <p className="text-xs text-muted-foreground">
