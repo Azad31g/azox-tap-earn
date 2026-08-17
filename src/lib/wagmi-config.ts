@@ -1,5 +1,6 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { defineChain } from "viem";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import type { AppKitNetwork } from "@reown/appkit/networks";
 
 export const robinhoodTestnet = defineChain({
   id: 46630,
@@ -10,25 +11,24 @@ export const robinhoodTestnet = defineChain({
   },
   blockExplorers: {
     default: {
-      name: "Explorer",
+      name: "Robinhood Explorer",
       url: "https://explorer.testnet.chain.robinhood.com",
     },
   },
   testnet: true,
 });
 
-// WalletConnect Project IDs are publishable client identifiers (not secrets),
-// so a hardcoded default keeps the app booting even without an env override.
-const DEFAULT_WALLETCONNECT_PROJECT_ID = "be9bcbf74fc2ea216bd558ee88a70feb";
+// WalletConnect / Reown Project IDs are publishable client identifiers.
+export const projectId = "be9bcbf74fc2ea216bd558ee88a70feb";
 
-const projectId =
-  (import.meta.env["VITE_WALLETCONNECT_PROJECT_ID"] as string | undefined) ||
-  DEFAULT_WALLETCONNECT_PROJECT_ID;
+export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [
+  robinhoodTestnet,
+];
 
-
-export const wagmiConfig = getDefaultConfig({
-  appName: "AZOX Gaming Hub",
+export const wagmiAdapter = new WagmiAdapter({
+  networks,
   projectId,
-  chains: [robinhoodTestnet],
   ssr: true,
 });
+
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
